@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>세일즈 정산 보드</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.js" integrity="sha384-iU8HYtnGQ8Cy4zl7gbNMOhsDTTKX02BTXptVP/vqAWIaTfM7isw76iyZCsjL2eVi" crossorigin="anonymous"></script>
+<style>
+:root { color-scheme: light; }
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f2f5;color:#1a1a2e;font-size:13px;}
+.header{background:linear-gradient(135deg,#1e2d5a 0%,#2d4a8a 100%);color:#fff;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.header h1{font-size:17px;font-weight:700;display:flex;align-items:center;gap:8px;}
+.header-right{display:flex;align-items:center;gap:8px;}
+.add-btn{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);color:#fff;border-radius:6px;padding:5px 12px;font-size:12px;cursor:pointer;font-weight:600;transition:background .15s;}
+.add-btn:hover{background:rgba(255,255,255,.3);}
+.rate-bar{background:#fffbeb;border-bottom:1px solid #fde68a;padding:8px 20px;font-size:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.rate-tag{background:#fef3c7;border:1px solid #fcd34d;border-radius:4px;padding:2px 8px;font-weight:700;color:#92400e;}
+
+/* Period filter */
+.period-bar{background:#fff;border-bottom:1px solid #e5e7eb;padding:10px 20px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.period-bar-label{font-size:11px;font-weight:600;color:#6b7280;margin-right:4px;}
+.period-pill{padding:4px 12px;border-radius:20px;border:1px solid #e5e7eb;font-size:12px;font-weight:600;cursor:pointer;color:#6b7280;transition:all .15s;}
+.period-pill:hover{border-color:#2d4a8a;color:#2d4a8a;}
+.period-pill.active{background:#1e2d5a;color:#fff;border-color:#1e2d5a;}
+.period-count{font-size:10px;background:rgba(255,255,255,.3);border-radius:10px;padding:1px 5px;margin-left:3px;}
+
+.content{padding:16px;}
+.kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:16px;}
+.kpi{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:14px;text-align:center;}
+.kpi .label{font-size:11px;color:#6b7280;margin-bottom:4px;}
+.kpi .value{font-size:20px;font-weight:800;color:#1e2d5a;line-height:1;}
+.kpi .sub{font-size:11px;color:#9ca3af;margin-top:3px;}
+.kpi.accent .value{color:#059669;}
+.section{background:#fff;border:1px solid #e5e7eb;border-radius:10px;margin-bottom:14px;overflow:hidden;}
+.section-header{padding:12px 16px;font-size:13px;font-weight:700;border-bottom:1px solid #f3f4f6;display:flex;align-items:center;justify-content:space-between;}
+.tabs{display:flex;gap:2px;padding:10px 16px 0;border-bottom:1px solid #f3f4f6;}
+.tab{padding:6px 14px;border-radius:6px 6px 0 0;cursor:pointer;font-size:12px;font-weight:600;border:1px solid transparent;border-bottom:none;color:#6b7280;transition:all .15s;}
+.tab.active{background:#fff;border-color:#e5e7eb;color:#1e2d5a;margin-bottom:-1px;}
+.tab-content{display:none;padding:16px;}
+.tab-content.active{display:block;}
+.chart-row{display:grid;grid-template-columns:220px 1fr;gap:16px;align-items:start;}
+table{width:100%;border-collapse:collapse;}
+th{text-align:left;font-size:11px;font-weight:600;color:#6b7280;padding:8px 10px;border-bottom:2px solid #f3f4f6;white-space:nowrap;}
+td{padding:8px 10px;border-bottom:1px solid #f9fafb;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+.brand-tag{display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700;margin-right:4px;}
+.tag-mylabs{background:#dbeafe;color:#1e40af;}
+.tag-ydy{background:#ede9fe;color:#5b21b6;}
+.tag-cp{background:#fee2e2;color:#b91c1c;}
+.tag-11st{background:#fef9c3;color:#854d0e;}
+.tag-smart{background:#dcfce7;color:#166534;}
+.bar-wrap{display:flex;align-items:center;gap:6px;}
+.bar-bg{flex:1;height:6px;background:#f3f4f6;border-radius:3px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:3px;transition:width .4s;}
+.pct{font-size:11px;font-weight:700;min-width:36px;text-align:right;}
+.num{font-weight:600;}
+.green{color:#059669;}
+.red{color:#dc2626;}
+.gray{color:#9ca3af;}
+.insight{background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:10px 14px;font-size:12px;color:#166534;margin-top:12px;}
+.insight::before{content:"💡 ";font-size:13px;}
+.cost-table th{background:#f9fafb;}
+.pharmacist-box{background:#faf5ff;border:1px solid #d8b4fe;border-radius:8px;padding:12px 14px;margin-bottom:12px;}
+.pharmacist-box .ph-name{font-weight:700;font-size:14px;color:#5b21b6;margin-bottom:8px;}
+.pharmacist-box .ph-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.pharmacist-box .ph-stat{text-align:center;}
+.pharmacist-box .ph-stat .v{font-size:16px;font-weight:800;color:#5b21b6;}
+.pharmacist-box .ph-stat .l{font-size:10px;color:#7c3aed;margin-top:2px;}
+.warn{background:#fef3c7;border:1px solid #fcd34d;border-radius:6px;padding:8px 12px;font-size:11px;color:#92400e;margin-top:10px;}
+.warn::before{content:"⚠️ ";}
+.footer-note{text-align:center;font-size:11px;color:#9ca3af;padding:12px;border-top:1px solid #f3f4f6;}
+
+/* Monthly trend */
+.trend-section{background:#fff;border:1px solid #e5e7eb;border-radius:10px;margin-bottom:14px;overflow:hidden;}
+.trend-header{padding:12px 16px;font-size:13px;font-weight:700;border-bottom:1px solid #f3f4f6;}
+.trend-body{padding:16px;}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;display:none;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:#fff;border-radius:12px;padding:24px;width:560px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+.modal h2{font-size:16px;font-weight:700;margin-bottom:4px;color:#1e2d5a;}
+.modal .sub{font-size:12px;color:#6b7280;margin-bottom:16px;}
+.modal label{display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:4px;margin-top:12px;}
+.modal input,.modal select,.modal textarea{width:100%;border:1px solid #d1d5db;border-radius:6px;padding:8px 10px;font-size:13px;font-family:inherit;}
+.modal textarea{height:120px;resize:vertical;font-family:monospace;font-size:11px;}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:20px;}
+.btn-primary{background:#1e2d5a;color:#fff;border:none;border-radius:6px;padding:8px 18px;font-size:13px;font-weight:600;cursor:pointer;}
+.btn-primary:hover{background:#2d4a8a;}
+.btn-cancel{background:#f3f4f6;color:#374151;border:none;border-radius:6px;padding:8px 18px;font-size:13px;font-weight:600;cursor:pointer;}
+.btn-cancel:hover{background:#e5e7eb;}
+.template-box{background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;padding:10px;font-size:11px;font-family:monospace;color:#374151;white-space:pre;overflow-x:auto;margin-top:8px;}
+.del-btn{background:none;border:none;cursor:pointer;color:#dc2626;font-size:12px;padding:2px 6px;border-radius:4px;}
+.del-btn:hover{background:#fee2e2;}
+.empty-state{text-align:center;padding:40px;color:#9ca3af;font-size:13px;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>📊 세일즈 정산 보드</h1>
+  <div class="header-right">
+    <div style="font-size:12px;opacity:.8;" id="header-period-label">전체 데이터</div>
+    <button class="add-btn" onclick="openAddModal()">+ 새 기간 데이터 추가</button>
+  </div>
+</div>
+
+<div class="rate-bar">
+  ⚙️ 계산 기준: 환율
+  <span class="rate-tag" id="rate-display">불러오는 중…</span>
+  <span id="rate-loading">실시간 환율</span>
+  · 기본 배송비 $4.80/건 · BQ10 공구 3개묶음 $7.30 / 6개묶음 $8.30 · 쿠팡 정산 미제공 → 매출액 기준
+</div>
+
+<!-- Period filter -->
+<div class="period-bar">
+  <span class="period-bar-label">📅 기간 필터</span>
+  <div id="period-pills"></div>
+</div>
+
+<div class="content">
+  <!-- KPI -->
+  <div class="kpi-grid" id="kpi-grid">
+    <div class="kpi"><div class="label">총 주문</div><div class="value" id="kpi-orders">-</div><div class="sub" id="kpi-orders-sub">-</div></div>
+    <div class="kpi"><div class="label">총 매출</div><div class="value" id="kpi-sales">-</div><div class="sub">전체 채널</div></div>
+    <div class="kpi"><div class="label">정산 예정액</div><div class="value" id="kpi-settlement">-</div><div class="sub">쿠팡 매출액 대체</div></div>
+    <div class="kpi"><div class="label">원가 + 배송비</div><div class="value" id="kpi-cost">-</div><div class="sub" id="kpi-rate-sub">@환율</div></div>
+    <div class="kpi accent"><div class="label">순마진</div><div class="value" id="kpi-margin">-</div><div class="sub" id="kpi-margin-pct">마진율 -</div></div>
+  </div>
+
+  <!-- Monthly trend (visible only on 전체 view) -->
+  <div class="trend-section" id="trend-section">
+    <div class="trend-header">📈 월별 실적 추이</div>
+    <div class="trend-body">
+      <canvas id="chart-monthly" height="90"></canvas>
+    </div>
+  </div>
+
+  <!-- 탭 보드 -->
+  <div class="section">
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('total')">📊 전체 통합</div>
+      <div class="tab" onclick="switchTab('mylabs')">🔵 Mylabs</div>
+      <div class="tab" onclick="switchTab('ydy')">🟣 YDY</div>
+      <div class="tab" onclick="switchTab('costs')">💰 원가 기준표</div>
+      <div class="tab" onclick="switchTab('manage')">⚙️ 데이터 관리</div>
+    </div>
+
+    <!-- 전체 통합 -->
+    <div class="tab-content active" id="tab-total">
+      <div class="chart-row">
+        <div>
+          <div style="font-size:11px;font-weight:600;color:#6b7280;margin-bottom:8px;">채널별 순마진</div>
+          <canvas id="chart-channel" width="200" height="200"></canvas>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:600;color:#6b7280;margin-bottom:8px;">채널별 실적</div>
+          <table>
+            <thead><tr><th>채널</th><th>건수</th><th>매출</th><th>정산</th><th>순마진</th></tr></thead>
+            <tbody id="channel-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div style="margin-top:16px;">
+        <div style="font-size:11px;font-weight:600;color:#6b7280;margin-bottom:8px;">상품별 순마진 분석</div>
+        <table>
+          <thead><tr><th>상품</th><th>건수</th><th>정산 예정액</th><th>총 원가+배송</th><th>순마진</th><th>마진율</th></tr></thead>
+          <tbody id="product-tbody"></tbody>
+        </table>
+        <div class="insight" id="insight-total"></div>
+      </div>
+    </div>
+
+    <!-- Mylabs -->
+    <div class="tab-content" id="tab-mylabs">
+      <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:16px;">
+        <div class="kpi"><div class="label">총 주문</div><div class="value" id="ml-orders">-</div><div class="sub">채널 전체</div></div>
+        <div class="kpi"><div class="label">총 매출</div><div class="value" id="ml-sales">-</div><div class="sub">Mylabs 전체</div></div>
+        <div class="kpi"><div class="label">정산 예정액</div><div class="value" id="ml-settlement">-</div></div>
+        <div class="kpi accent"><div class="label">순마진</div><div class="value" id="ml-margin">-</div><div class="sub" id="ml-margin-pct">-</div></div>
+      </div>
+      <div class="chart-row">
+        <div>
+          <div style="font-size:11px;font-weight:600;color:#6b7280;margin-bottom:8px;">상품별 매출 구성</div>
+          <canvas id="chart-mylabs" width="200" height="200"></canvas>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:600;color:#6b7280;margin-bottom:8px;">채널별 실적</div>
+          <table>
+            <thead><tr><th>채널</th><th>건수</th><th>매출</th><th>정산</th><th>순마진</th></tr></thead>
+            <tbody id="ml-channel-tbody"></tbody>
+          </table>
+          <div class="insight" id="insight-mylabs"></div>
+        </div>
+      </div>
+      <div style="margin-top:16px;">
+        <div style="font-size:11px;font-weight:600;color:#6b7280;margin-bottom:8px;">상품별 순마진 상세</div>
+        <table>
+          <thead><tr><th>채널</th><th>상품</th><th>건수</th><th>정산</th><th>원가+배송</th><th>순마진</th><th>마진율</th></tr></thead>
+          <tbody id="ml-product-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- YDY -->
+    <div class="tab-content" id="tab-ydy">
+      <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:16px;">
+        <div class="kpi"><div class="label">총 주문</div><div class="value" id="ydy-orders">-</div><div class="sub">공구+일반</div></div>
+        <div class="kpi"><div class="label">총 매출</div><div class="value" id="ydy-sales">-</div></div>
+        <div class="kpi"><div class="label">정산 예정액</div><div class="value" id="ydy-settlement">-</div></div>
+        <div class="kpi accent"><div class="label">순마진</div><div class="value" id="ydy-margin">-</div><div class="sub" id="ydy-margin-pct">-</div></div>
+      </div>
+
+      <div class="pharmacist-box" id="ph-box">
+        <div class="ph-name">💊 약사 #1 형제약사</div>
+        <div class="ph-stats">
+          <div class="ph-stat"><div class="v" id="ph-qty">-</div><div class="l">공구 건수</div></div>
+          <div class="ph-stat"><div class="v" id="ph-sales">-</div><div class="l">매출</div></div>
+          <div class="ph-stat"><div class="v" id="ph-settlement">-</div><div class="l">정산 예정액</div></div>
+          <div class="ph-stat"><div class="v" id="ph-margin">-</div><div class="l">순마진</div></div>
+        </div>
+        <table style="margin-top:12px;">
+          <thead><tr><th>옵션</th><th>건수</th><th>단가(매출)</th><th>정산(건당)</th><th>원가+배송</th><th>순마진(건당)</th><th>마진율</th></tr></thead>
+          <tbody id="ydy-gonggu-tbody"></tbody>
+        </table>
+        <div class="warn" id="warn-rate"></div>
+      </div>
+
+      <div style="font-size:11px;font-weight:600;color:#6b7280;margin-bottom:8px;">YDY 일반 상품 실적</div>
+      <table>
+        <thead><tr><th>상품</th><th>건수</th><th>정산</th><th>원가+배송</th><th>순마진</th><th>마진율</th></tr></thead>
+        <tbody id="ydy-general-tbody"></tbody>
+      </table>
+
+      <div style="margin-top:16px;">
+        <canvas id="chart-ydy" width="300" height="200"></canvas>
+      </div>
+    </div>
+
+    <!-- 원가 기준표 -->
+    <div class="tab-content" id="tab-costs">
+      <div style="font-size:11px;color:#6b7280;margin-bottom:12px;">
+        환율 <strong id="cost-rate-display">-</strong> 기준으로 자동 계산됩니다.
+      </div>
+      <table class="cost-table">
+        <thead><tr><th>브랜드</th><th>상품</th><th>단위 원가(USD)</th><th>배송비(USD)</th><th>1pk 총원가</th><th>2pk 총원가</th><th>3pk 총원가</th></tr></thead>
+        <tbody id="cost-tbody"></tbody>
+      </table>
+    </div>
+
+    <!-- 데이터 관리 -->
+    <div class="tab-content" id="tab-manage">
+      <div style="font-size:13px;font-weight:700;color:#1e2d5a;margin-bottom:12px;">📂 기간별 데이터 목록</div>
+      <div id="manage-list"></div>
+    </div>
+  </div>
+
+  <div class="footer-note" id="footer-note">환율 확인 중…</div>
+</div>
+
+<!-- Add Data Modal -->
+<div class="modal-overlay" id="add-modal">
+  <div class="modal">
+    <h2>+ 새 기간 데이터 추가</h2>
+    <p class="sub">새로운 판매 기간 데이터를 JSON 형식으로 입력하세요. 기존 데이터에 누적됩니다.</p>
+
+    <label>기간 이름 (예: 2026년 6월 1주차)</label>
+    <input type="text" id="input-period-label" placeholder="예: 2026년 6월 1주차">
+
+    <label>기간 ID (예: 2026-06-w1, 월별이면 2026-06)</label>
+    <input type="text" id="input-period-id" placeholder="예: 2026-06-w1">
+
+    <label>주문 데이터 (JSON 배열)</label>
+    <div style="font-size:11px;color:#6b7280;margin-bottom:6px;">아래 형식을 복사해서 수정하세요:</div>
+    <div class="template-box">[
+  {
+    "label": "Berberine Alpha 3pk",
+    "channel": "스마트스토어",
+    "brand": "Mylabs",
+    "qty": 10,
+    "settlement": 1235290,
+    "sales": 1323000,
+    "cost_usd": 30.18
+  }
+]</div>
+    <textarea id="input-json" placeholder="JSON 데이터를 여기에 붙여넣기..."></textarea>
+    <div id="input-error" style="color:#dc2626;font-size:11px;margin-top:4px;display:none;"></div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeAddModal()">취소</button>
+      <button class="btn-primary" onclick="saveNewData()">저장</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── Base data (5/26~5/29) ──────────────────────────────────────────────────
+const BASE_ORDERS = [
+  { label:"Berberine Alpha 3pk", channel:"스마트스토어", brand:"Mylabs", qty:10, settlement:1235290, sales:1323000, cost_usd:30.18 },
+  { label:"Berberine Alpha 1pk", channel:"스마트스토어", brand:"Mylabs", qty:1, settlement:45752, sales:46000, cost_usd:13.26 },
+  { label:"VS Formula Prime 3pk", channel:"스마트스토어", brand:"Mylabs", qty:3, settlement:351940, sales:372600, cost_usd:20.37 },
+  { label:"VS Formula Prime 2pk", channel:"쿠팡", brand:"Mylabs", qty:2, settlement:184000, sales:184000, cost_usd:15.18 },
+  { label:"VS Formula Prime 1pk", channel:"스마트스토어", brand:"Mylabs", qty:5, settlement:221705, sales:230000, cost_usd:9.99 },
+  { label:"VS Formula Prime 1pk", channel:"11번가", brand:"Mylabs", qty:1, settlement:47484, sales:46000, cost_usd:9.99 },
+  { label:"VS Formula Prime 1pk", channel:"스마트스토어", brand:"Mylabs", qty:1, settlement:42951, sales:46000, cost_usd:9.99 },
+  { label:"YDY BQ10 3개묶음", channel:"스마트스토어", brand:"YDY", qty:44, settlement:4443428, sales:4752000, cost_usd:56.77 },
+  { label:"YDY BQ10 6개묶음", channel:"스마트스토어", brand:"YDY", qty:35, settlement:6494320, sales:7560000, cost_usd:107.24 },
+  { label:"Circu Pycnogenol", channel:"스마트스토어", brand:"YDY", qty:1, settlement:133053, sales:160000, cost_usd:27.79 },
+  { label:"Magduo K2", channel:"스마트스토어", brand:"YDY", qty:1, settlement:51447, sales:55000, cost_usd:14.79 },
+];
+
+const BASE_PERIOD = { id: "2026-05-w4", label: "2026년 5월 4주차 (5/26~5/29)" };
+
+const COST_TABLE = [
+  { brand:"Mylabs", product:"Berberine Alpha", unit:8.46, shipping_base:4.80 },
+  { brand:"Mylabs", product:"VS Formula Prime", unit:5.19, shipping_base:4.80 },
+  { brand:"YDY", product:"All Active BQ10", unit:16.49, shipping_3:7.30, shipping_6:8.30 },
+  { brand:"YDY", product:"Circu Pycnogenol", unit:22.99, shipping_base:4.80 },
+  { brand:"YDY", product:"Magduo K2", unit:9.99, shipping_base:4.80 },
+  { brand:"YDY", product:"NAD+", unit:17.99, shipping_base:4.80 },
+  { brand:"YDY", product:"Berberine Phytosome", unit:15.99, shipping_base:4.80 },
+];
+
+// ─── State ──────────────────────────────────────────────────────────────────
+let RATE = 1506.83;
+let rateSource = "캐시 기준";
+let selectedPeriod = "all"; // "all" or period id
+
+// LocalStorage keys
+const LS_EXTRA = "salesboard_extra_periods";
+
+function loadExtraPeriods() {
+  try { return JSON.parse(localStorage.getItem(LS_EXTRA)) || []; }
+  catch(e) { return []; }
+}
+function saveExtraPeriods(data) {
+  localStorage.setItem(LS_EXTRA, JSON.stringify(data));
+}
+
+function getAllPeriods() {
+  const extras = loadExtraPeriods();
+  return [BASE_PERIOD, ...extras];
+}
+
+function getAllOrders() {
+  const extras = loadExtraPeriods();
+  const baseOrders = BASE_ORDERS.map(o => ({...o, period: BASE_PERIOD.id}));
+  const extraOrders = extras.flatMap(p => p.orders.map(o => ({...o, period: p.id})));
+  return [...baseOrders, ...extraOrders];
+}
+
+function getFilteredOrders() {
+  const all = getAllOrders();
+  if (selectedPeriod === "all") return all;
+  return all.filter(o => o.period === selectedPeriod);
+}
+
+// ─── Utilities ──────────────────────────────────────────────────────────────
+function fmt(n) { return "₩" + Math.round(n).toLocaleString("ko-KR"); }
+function pct(n) { return (n * 100).toFixed(1) + "%"; }
+function barColor(p) {
+  if (p > 0.6) return "#059669";
+  if (p > 0.3) return "#2563eb";
+  if (p > 0.1) return "#d97706";
+  return "#dc2626";
+}
+function getPeriodMonth(id) {
+  const m = id.match(/^(\d{4}-\d{2})/);
+  return m ? m[1] : id;
+}
+
+// ─── Exchange rate ──────────────────────────────────────────────────────────
+async function fetchRate() {
+  try {
+    const r = await fetch("https://api.exchangerate-api.com/v4/latest/USD");
+    const d = await r.json();
+    RATE = d.rates.KRW;
+    rateSource = d.date + " 기준";
+  } catch(e) {
+    try {
+      const r2 = await fetch("https://open.er-api.com/v6/latest/USD");
+      const d2 = await r2.json();
+      RATE = d2.rates.KRW;
+      rateSource = "실시간";
+    } catch(e2) {
+      rateSource = "캐시 (2026-06-01)";
+    }
+  }
+  updateAll();
+}
+
+// ─── Period pills ────────────────────────────────────────────────────────────
+function buildPeriodPills() {
+  const periods = getAllPeriods();
+  const allOrders = getAllOrders();
+
+  // Group by month for display
+  const monthMap = {};
+  periods.forEach(p => {
+    const month = getPeriodMonth(p.id);
+    if (!monthMap[month]) monthMap[month] = { count: 0, label: month };
+    monthMap[month].count += allOrders.filter(o => o.period === p.id).length;
+  });
+
+  const totalQty = allOrders.reduce((s,o)=>s+o.qty,0);
+  let html = `<span class="period-pill ${selectedPeriod==='all'?'active':''}" onclick="selectPeriod('all')">전체<span class="period-count">${totalQty}건</span></span>`;
+
+  // Individual period pills
+  periods.forEach(p => {
+    const cnt = allOrders.filter(o => o.period === p.id).reduce((s,o) => s+o.qty, 0);
+    html += `<span class="period-pill ${selectedPeriod===p.id?'active':''}" onclick="selectPeriod('${p.id}')">${p.label}<span class="period-count">${cnt}건</span></span>`;
+  });
+
+  document.getElementById("period-pills").innerHTML = html;
+
+  // Update header label
+  if (selectedPeriod === "all") {
+    document.getElementById("header-period-label").textContent = `전체 ${periods.length}개 기간`;
+  } else {
+    const p = periods.find(x => x.id === selectedPeriod);
+    document.getElementById("header-period-label").textContent = p ? p.label : selectedPeriod;
+  }
+}
+
+function selectPeriod(id) {
+  selectedPeriod = id;
+  buildPeriodPills();
+  updateAll();
+}
+
+// ─── Main update ─────────────────────────────────────────────────────────────
+function updateAll() {
+  const raw = getFilteredOrders();
+  const data = raw.map(o => ({
+    ...o,
+    cost_krw: o.cost_usd * RATE * o.qty,
+    margin: o.settlement - o.cost_usd * RATE * o.qty,
+  }));
+
+  document.getElementById("rate-display").textContent = `$1 = ₩${RATE.toFixed(0)}`;
+  document.getElementById("rate-loading").textContent = rateSource;
+  document.getElementById("cost-rate-display").textContent = `$1 = ₩${RATE.toFixed(0)}`;
+
+  const totalOrders = data.reduce((s,o)=>s+o.qty,0);
+  const totalSales = data.reduce((s,o)=>s+o.sales,0);
+  const totalSettlement = data.reduce((s,o)=>s+o.settlement,0);
+  const totalCost = data.reduce((s,o)=>s+o.cost_krw,0);
+  const totalMargin = data.reduce((s,o)=>s+o.margin,0);
+
+  document.getElementById("kpi-orders").textContent = totalOrders + "건";
+  document.getElementById("kpi-orders-sub").textContent = getAllPeriods().length + "개 기간";
+  document.getElementById("kpi-sales").textContent = fmt(totalSales);
+  document.getElementById("kpi-settlement").textContent = fmt(totalSettlement);
+  document.getElementById("kpi-cost").textContent = fmt(totalCost);
+  document.getElementById("kpi-rate-sub").textContent = `@${RATE.toFixed(0)} KRW/USD`;
+  document.getElementById("kpi-margin").textContent = fmt(totalMargin);
+  document.getElementById("kpi-margin-pct").textContent = totalSettlement > 0 ? `마진율 ${pct(totalMargin/totalSettlement)}` : "-";
+
+  // Show trend section only for all
+  document.getElementById("trend-section").style.display = selectedPeriod === "all" ? "block" : "none";
+
+  buildTotal(data);
+  buildMylabs(data);
+  buildYDY(data);
+  buildCosts();
+  buildCharts(data);
+  buildManage();
+
+  if (selectedPeriod === "all") buildMonthlyTrend();
+
+  document.getElementById("footer-note").textContent =
+    `환율 확인: ${new Date().toLocaleString("ko-KR")} · ${rateSource} · 총 ${getAllPeriods().length}개 기간`;
+}
+
+// ─── Monthly trend chart ─────────────────────────────────────────────────────
+let chartMonthly = null;
+function buildMonthlyTrend() {
+  const allOrders = getAllOrders();
+  const periods = getAllPeriods();
+
+  const periodData = periods.map(p => {
+    const orders = allOrders.filter(o => o.period === p.id);
+    const settlement = orders.reduce((s,o) => s+o.settlement, 0);
+    const cost = orders.reduce((s,o) => s+o.cost_usd*RATE*o.qty, 0);
+    const margin = settlement - cost;
+    return { label: p.label.replace("2026년 ", "").replace("주차", "W"), settlement, margin, marginRate: settlement>0?margin/settlement:0 };
+  });
+
+  if (chartMonthly) chartMonthly.destroy();
+  chartMonthly = new Chart(document.getElementById("chart-monthly"), {
+    type: "bar",
+    data: {
+      labels: periodData.map(d => d.label),
+      datasets: [
+        { label: "정산 예정액", data: periodData.map(d => d.settlement), backgroundColor: "#bfdbfe", yAxisID: "y" },
+        { label: "순마진", data: periodData.map(d => d.margin), backgroundColor: "#34d399", yAxisID: "y" },
+        { label: "마진율(%)", data: periodData.map(d => +(d.marginRate*100).toFixed(1)), type: "line", borderColor: "#f59e0b", backgroundColor: "transparent", yAxisID: "y2", tension: 0.3, pointRadius: 4 },
+      ]
+    },
+    options: {
+      plugins: { legend: { position: "bottom", labels: { font: { size: 11 } } } },
+      scales: {
+        y: { ticks: { callback: v => "₩"+Math.round(v/10000)+"만", font: { size: 9 } } },
+        y2: { position: "right", ticks: { callback: v => v+"%", font: { size: 9 } }, grid: { drawOnChartArea: false } }
+      },
+      responsive: true
+    }
+  });
+}
+
+// ─── Total tab ───────────────────────────────────────────────────────────────
+function buildTotal(data) {
+  const channels = {};
+  data.forEach(o => {
+    if(!channels[o.channel]) channels[o.channel] = {orders:0,sales:0,settlement:0,cost:0,margin:0};
+    channels[o.channel].orders += o.qty;
+    channels[o.channel].sales += o.sales;
+    channels[o.channel].settlement += o.settlement;
+    channels[o.channel].cost += o.cost_krw;
+    channels[o.channel].margin += o.margin;
+  });
+
+  const tagMap = {"스마트스토어":"tag-smart","쿠팡":"tag-cp","11번가":"tag-11st"};
+  let html = ""; let totO=0,totS=0,totSet=0,totM=0;
+  for(const [ch,v] of Object.entries(channels)){
+    html += `<tr><td><span class="brand-tag ${tagMap[ch]||''}">${ch}</span></td><td>${v.orders}건</td><td>${fmt(v.sales)}</td><td>${fmt(v.settlement)}</td><td class="green num">${fmt(v.margin)}</td></tr>`;
+    totO+=v.orders; totS+=v.sales; totSet+=v.settlement; totM+=v.margin;
+  }
+  html += `<tr style="font-weight:700;border-top:2px solid #e5e7eb"><td>합계</td><td>${totO}건</td><td>${fmt(totS)}</td><td>${fmt(totSet)}</td><td class="green">${fmt(totM)}</td></tr>`;
+  document.getElementById("channel-tbody").innerHTML = html;
+
+  const products = {};
+  data.forEach(o => {
+    const key = `${o.brand}__${o.label}`;
+    if(!products[key]) products[key] = {label:o.label,brand:o.brand,orders:0,settlement:0,cost:0,margin:0};
+    products[key].orders += o.qty;
+    products[key].settlement += o.settlement;
+    products[key].cost += o.cost_krw;
+    products[key].margin += o.margin;
+  });
+
+  let phtml = "";
+  const sorted = Object.values(products).sort((a,b)=>b.settlement-a.settlement);
+  let tO=0,tSet=0,tCost=0,tMar=0;
+  for(const p of sorted) {
+    const mp = p.settlement>0?p.margin/p.settlement:0;
+    const bc = barColor(mp);
+    phtml += `<tr>
+      <td><span class="brand-tag ${p.brand==='Mylabs'?'tag-mylabs':'tag-ydy'}">${p.brand}</span>${p.label}</td>
+      <td>${p.orders}건</td><td>${fmt(p.settlement)}</td><td class="red">${fmt(p.cost)}</td>
+      <td class="green num">${fmt(p.margin)}</td>
+      <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:${Math.max(0,mp*100)}%;background:${bc}"></div></div><span class="pct" style="color:${bc}">${pct(mp)}</span></div></td>
+    </tr>`;
+    tO+=p.orders; tSet+=p.settlement; tCost+=p.cost; tMar+=p.margin;
+  }
+  phtml += `<tr style="font-weight:700;border-top:2px solid #e5e7eb"><td>합계</td><td>${tO}건</td><td>${fmt(tSet)}</td><td class="red">${fmt(tCost)}</td><td class="green">${fmt(tMar)}</td><td class="green">${tSet>0?pct(tMar/tSet):'-'}</td></tr>`;
+  document.getElementById("product-tbody").innerHTML = phtml;
+
+  const myM = data.filter(o=>o.brand==="Mylabs").reduce((s,o)=>s+o.margin,0);
+  const mySet = data.filter(o=>o.brand==="Mylabs").reduce((s,o)=>s+o.settlement,0);
+  document.getElementById("insight-total").textContent =
+    `Mylabs 마진율 ${mySet>0?pct(myM/mySet):'-'}. YDY BQ10 공구는 환율 ${RATE.toFixed(0)} 기준 마진율 13~15%로 환율 상승 시 수익성 주의.`;
+}
+
+// ─── Mylabs tab ──────────────────────────────────────────────────────────────
+function buildMylabs(data) {
+  const ml = data.filter(o=>o.brand==="Mylabs");
+  if(!ml.length){ ["ml-orders","ml-sales","ml-settlement","ml-margin","ml-margin-pct"].forEach(id=>document.getElementById(id).textContent="-"); return; }
+  const totO=ml.reduce((s,o)=>s+o.qty,0);
+  const totSales=ml.reduce((s,o)=>s+o.sales,0);
+  const totSet=ml.reduce((s,o)=>s+o.settlement,0);
+  const totMar=ml.reduce((s,o)=>s+o.margin,0);
+  document.getElementById("ml-orders").textContent=totO+"건";
+  document.getElementById("ml-sales").textContent=fmt(totSales);
+  document.getElementById("ml-settlement").textContent=fmt(totSet);
+  document.getElementById("ml-margin").textContent=fmt(totMar);
+  document.getElementById("ml-margin-pct").textContent=`마진율 ${totSet>0?pct(totMar/totSet):'-'}`;
+
+  const ch={};
+  ml.forEach(o=>{
+    if(!ch[o.channel]) ch[o.channel]={orders:0,sales:0,settlement:0,margin:0};
+    ch[o.channel].orders+=o.qty; ch[o.channel].sales+=o.sales;
+    ch[o.channel].settlement+=o.settlement; ch[o.channel].margin+=o.margin;
+  });
+  const tagMap={"스마트스토어":"tag-smart","쿠팡":"tag-cp","11번가":"tag-11st"};
+  let chtml=""; let tO=0,tS=0,tSet=0,tM=0;
+  for(const[k,v] of Object.entries(ch)){
+    chtml+=`<tr><td><span class="brand-tag ${tagMap[k]||''}">${k}</span></td><td>${v.orders}건</td><td>${fmt(v.sales)}</td><td>${fmt(v.settlement)}</td><td class="green num">${fmt(v.margin)}</td></tr>`;
+    tO+=v.orders; tS+=v.sales; tSet+=v.settlement; tM+=v.margin;
+  }
+  chtml+=`<tr style="font-weight:700"><td>합계</td><td>${tO}건</td><td>${fmt(tS)}</td><td>${fmt(tSet)}</td><td class="green">${fmt(tM)}</td></tr>`;
+  document.getElementById("ml-channel-tbody").innerHTML=chtml;
+  document.getElementById("insight-mylabs").textContent=`VS Prime·Berberine 단품/3pk 마진율 65~75% 수준. Mylabs는 전 상품 고마진 구조입니다.`;
+
+  let phtml="";
+  const products={};
+  ml.forEach(o=>{
+    const key=`${o.channel}__${o.label}`;
+    if(!products[key]) products[key]={channel:o.channel,label:o.label,qty:0,settlement:0,cost_krw:0,cost_usd:o.cost_usd,margin:0};
+    products[key].qty+=o.qty; products[key].settlement+=o.settlement;
+    products[key].cost_krw+=o.cost_krw; products[key].margin+=o.margin;
+  });
+  for(const o of Object.values(products)){
+    const mp=o.settlement>0?o.margin/o.settlement:0;
+    const bc=barColor(mp);
+    phtml+=`<tr>
+      <td><span class="brand-tag ${tagMap[o.channel]||''}">${o.channel}</span></td>
+      <td>${o.label}</td><td>${o.qty}건</td>
+      <td>${fmt(o.settlement)}</td>
+      <td class="red">$${o.cost_usd.toFixed(2)}×${o.qty}=${fmt(o.cost_krw)}</td>
+      <td class="green num">${fmt(o.margin)}</td>
+      <td><span style="color:${bc};font-weight:700">${pct(mp)}</span></td>
+    </tr>`;
+  }
+  const mlSet=ml.reduce((s,o)=>s+o.settlement,0);
+  const mlCost=ml.reduce((s,o)=>s+o.cost_krw,0);
+  const mlMar=ml.reduce((s,o)=>s+o.margin,0);
+  phtml+=`<tr style="font-weight:700"><td colspan="3">합계 ${ml.reduce((s,o)=>s+o.qty,0)}건</td><td>${fmt(mlSet)}</td><td class="red">${fmt(mlCost)}</td><td class="green">${fmt(mlMar)}</td><td>${mlSet>0?pct(mlMar/mlSet):'-'}</td></tr>`;
+  document.getElementById("ml-product-tbody").innerHTML=phtml;
+}
+
+// ─── YDY tab ─────────────────────────────────────────────────────────────────
+function buildYDY(data) {
+  const ydy=data.filter(o=>o.brand==="YDY");
+  if(!ydy.length){ ["ydy-orders","ydy-sales","ydy-settlement","ydy-margin","ydy-margin-pct","ph-qty","ph-sales","ph-settlement","ph-margin"].forEach(id=>document.getElementById(id).textContent="-"); return; }
+  const totO=ydy.reduce((s,o)=>s+o.qty,0);
+  const totSales=ydy.reduce((s,o)=>s+o.sales,0);
+  const totSet=ydy.reduce((s,o)=>s+o.settlement,0);
+  const totMar=ydy.reduce((s,o)=>s+o.margin,0);
+  document.getElementById("ydy-orders").textContent=totO+"건";
+  document.getElementById("ydy-sales").textContent=fmt(totSales);
+  document.getElementById("ydy-settlement").textContent=fmt(totSet);
+  document.getElementById("ydy-margin").textContent=fmt(totMar);
+  document.getElementById("ydy-margin-pct").textContent=`마진율 ${totSet>0?pct(totMar/totSet):'-'}`;
+
+  const gonggu=ydy.filter(o=>o.label.includes("BQ10"));
+  const phQty=gonggu.reduce((s,o)=>s+o.qty,0);
+  const phSales=gonggu.reduce((s,o)=>s+o.sales,0);
+  const phSet=gonggu.reduce((s,o)=>s+o.settlement,0);
+  const phMar=gonggu.reduce((s,o)=>s+o.margin,0);
+  document.getElementById("ph-qty").textContent=phQty+"건";
+  document.getElementById("ph-sales").textContent=fmt(phSales);
+  document.getElementById("ph-settlement").textContent=fmt(phSet);
+  document.getElementById("ph-margin").textContent=fmt(phMar);
+
+  const gGroups={};
+  gonggu.forEach(o=>{
+    if(!gGroups[o.label]) gGroups[o.label]={label:o.label,qty:0,sales:0,settlement:0,cost_usd:o.cost_usd,cost_krw:0,margin:0};
+    gGroups[o.label].qty+=o.qty; gGroups[o.label].sales+=o.sales;
+    gGroups[o.label].settlement+=o.settlement; gGroups[o.label].cost_krw+=o.cost_krw;
+    gGroups[o.label].margin+=o.margin;
+  });
+  let ghtml="";
+  for(const o of Object.values(gGroups)){
+    const pu_set=o.settlement/o.qty; const pu_cost=o.cost_usd*RATE; const pu_mar=pu_set-pu_cost;
+    const mp=pu_set>0?pu_mar/pu_set:0; const bc=barColor(mp);
+    ghtml+=`<tr>
+      <td>${o.label}</td><td>${o.qty}건</td>
+      <td>₩${Math.round(o.sales/o.qty).toLocaleString("ko-KR")}</td>
+      <td>≈₩${Math.round(pu_set).toLocaleString("ko-KR")}</td>
+      <td class="red">$${o.cost_usd}=₩${Math.round(pu_cost).toLocaleString("ko-KR")}</td>
+      <td class="green num">≈₩${Math.round(pu_mar).toLocaleString("ko-KR")}</td>
+      <td><span style="color:${bc};font-weight:700">${pct(mp)}</span></td>
+    </tr>`;
+  }
+  if(gonggu.length){
+    const gc=gonggu.reduce((s,o)=>s+o.cost_krw,0);
+    ghtml+=`<tr style="font-weight:700"><td>소계</td><td>${phQty}건</td><td></td><td>${fmt(phSet)}</td><td class="red">${fmt(gc)}</td><td class="green">${fmt(phMar)}</td><td>${phSet>0?pct(phMar/phSet):'-'}</td></tr>`;
+  }
+  document.getElementById("ydy-gonggu-tbody").innerHTML=ghtml;
+
+  const prev_rate=1504;
+  const bq3=gonggu.filter(o=>o.label.includes("3개"));
+  const bq6=gonggu.filter(o=>o.label.includes("6개"));
+  const mar_diff=(RATE-prev_rate)*(bq3.reduce((s,o)=>s+o.cost_usd,0)+bq6.reduce((s,o)=>s+o.cost_usd,0));
+  document.getElementById("warn-rate").textContent=
+    `환율 ${RATE.toFixed(0)} 기준 BQ10 공구 마진율 13~15%로 환율 상승 영향이 큽니다.`+
+    (Math.abs(mar_diff)>10000?` 환율 1,504 대비 마진 약 ${fmt(Math.abs(mar_diff))} ${mar_diff>0?"감소":"증가"}.`:"");
+
+  const general=ydy.filter(o=>!o.label.includes("BQ10"));
+  let ghtml2="";
+  const genGroups={};
+  general.forEach(o=>{
+    if(!genGroups[o.label]) genGroups[o.label]={label:o.label,qty:0,settlement:0,cost_usd:o.cost_usd,cost_krw:0,margin:0};
+    genGroups[o.label].qty+=o.qty; genGroups[o.label].settlement+=o.settlement;
+    genGroups[o.label].cost_krw+=o.cost_krw; genGroups[o.label].margin+=o.margin;
+  });
+  for(const o of Object.values(genGroups)){
+    const mp=o.settlement>0?o.margin/o.settlement:0; const bc=barColor(mp);
+    ghtml2+=`<tr>
+      <td>${o.label}</td><td>${o.qty}건</td>
+      <td>${fmt(o.settlement)}</td>
+      <td class="red">$${o.cost_usd}=₩${Math.round(o.cost_usd*RATE).toLocaleString("ko-KR")}</td>
+      <td class="green num">${fmt(o.margin)}</td>
+      <td><span style="color:${bc};font-weight:700">${pct(mp)}</span></td>
+    </tr>`;
+  }
+  if(!ghtml2) ghtml2=`<tr><td colspan="6" class="gray" style="text-align:center">해당 기간 일반 상품 없음</td></tr>`;
+  document.getElementById("ydy-general-tbody").innerHTML=ghtml2;
+}
+
+// ─── Costs tab ───────────────────────────────────────────────────────────────
+function buildCosts() {
+  let html="";
+  for(const c of COST_TABLE){
+    if(c.product==="All Active BQ10"){
+      const c3=(c.unit*3+c.shipping_3)*RATE; const c6=(c.unit*6+c.shipping_6)*RATE;
+      html+=`<tr><td><span class="brand-tag tag-ydy">${c.brand}</span></td><td>${c.product}</td><td>$${c.unit}/개</td><td>$${c.shipping_3}(3개)/$${c.shipping_6}(6개)</td><td class="gray">—</td><td class="gray">—</td><td>3개: $${(c.unit*3+c.shipping_3).toFixed(2)}=₩${Math.round(c3).toLocaleString("ko-KR")} / 6개: $${(c.unit*6+c.shipping_6).toFixed(2)}=₩${Math.round(c6).toLocaleString("ko-KR")}</td></tr>`;
+    } else {
+      const tag=c.brand==="Mylabs"?"tag-mylabs":"tag-ydy";
+      const c1=(c.unit+c.shipping_base)*RATE; const c2=(c.unit*2+c.shipping_base)*RATE; const c3=(c.unit*3+c.shipping_base)*RATE;
+      html+=`<tr><td><span class="brand-tag ${tag}">${c.brand}</span></td><td>${c.product}</td><td>$${c.unit}/병</td><td>$${c.shipping_base} 기본</td><td>$${(c.unit+c.shipping_base).toFixed(2)}=₩${Math.round(c1).toLocaleString("ko-KR")}</td><td>$${(c.unit*2+c.shipping_base).toFixed(2)}=₩${Math.round(c2).toLocaleString("ko-KR")}</td><td>$${(c.unit*3+c.shipping_base).toFixed(2)}=₩${Math.round(c3).toLocaleString("ko-KR")}</td></tr>`;
+    }
+  }
+  document.getElementById("cost-tbody").innerHTML=html;
+}
+
+// ─── Manage tab ──────────────────────────────────────────────────────────────
+function buildManage() {
+  const periods = getAllPeriods();
+  const allOrders = getAllOrders();
+  let html = "";
+  periods.forEach((p, i) => {
+    const orders = allOrders.filter(o => o.period === p.id);
+    const qty = orders.reduce((s,o)=>s+o.qty,0);
+    const settlement = orders.reduce((s,o)=>s+o.settlement,0);
+    const isBase = i === 0;
+    html += `<div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;">
+      <div>
+        <div style="font-weight:700;font-size:13px;color:#1e2d5a;">${p.label}</div>
+        <div style="font-size:11px;color:#6b7280;margin-top:2px;">${qty}건 · 정산 예정 ${fmt(settlement)}</div>
+      </div>
+      <div style="display:flex;gap:6px;align-items:center;">
+        ${isBase ? '<span style="font-size:11px;color:#6b7280;">기본 데이터</span>' : `<button class="del-btn" onclick="deletePeriod('${p.id}')">🗑 삭제</button>`}
+      </div>
+    </div>`;
+  });
+  document.getElementById("manage-list").innerHTML = html || '<div class="empty-state">데이터 없음</div>';
+}
+
+function deletePeriod(id) {
+  if(!confirm("이 기간 데이터를 삭제하시겠습니까?")) return;
+  const extras = loadExtraPeriods().filter(p => p.id !== id);
+  saveExtraPeriods(extras);
+  if (selectedPeriod === id) selectedPeriod = "all";
+  buildPeriodPills();
+  updateAll();
+}
+
+// ─── Charts ───────────────────────────────────────────────────────────────────
+let chartChannel=null, chartMylabs=null, chartYDY=null;
+function buildCharts(data) {
+  const channels={};
+  data.forEach(o=>{ if(!channels[o.channel]) channels[o.channel]=0; channels[o.channel]+=o.margin; });
+  const chLabels=Object.keys(channels);
+  const chVals=Object.values(channels).map(v=>Math.max(0,v));
+  if(chartChannel) chartChannel.destroy();
+  chartChannel=new Chart(document.getElementById("chart-channel"),{
+    type:"doughnut",
+    data:{labels:chLabels,datasets:[{data:chVals,backgroundColor:["#16a34a","#dc2626","#2563eb"],borderWidth:2}]},
+    options:{plugins:{legend:{position:"bottom",labels:{font:{size:11}}}},cutout:"60%"}
+  });
+
+  const ml=data.filter(o=>o.brand==="Mylabs");
+  const mlLabels=[...new Set(ml.map(o=>o.label))];
+  const mlSet=mlLabels.map(l=>ml.filter(o=>o.label===l).reduce((s,o)=>s+o.settlement,0));
+  const mlMar=mlLabels.map(l=>ml.filter(o=>o.label===l).reduce((s,o)=>s+o.margin,0));
+  if(chartMylabs) chartMylabs.destroy();
+  chartMylabs=new Chart(document.getElementById("chart-mylabs"),{
+    type:"bar",
+    data:{labels:mlLabels,datasets:[{label:"정산 예정액",data:mlSet,backgroundColor:"#bfdbfe"},{label:"순마진",data:mlMar,backgroundColor:"#34d399"}]},
+    options:{plugins:{legend:{position:"bottom",labels:{font:{size:10}}}},scales:{y:{ticks:{callback:v=>"₩"+Math.round(v/10000)+"만",font:{size:9}}}},responsive:true}
+  });
+
+  const ydyData=[
+    {label:"BQ10 3개(공구)",v:data.filter(o=>o.label.includes("3개묶음")).reduce((s,o)=>s+o.margin,0)},
+    {label:"BQ10 6개(공구)",v:data.filter(o=>o.label.includes("6개묶음")).reduce((s,o)=>s+o.margin,0)},
+    {label:"Circu Pycnogenol",v:data.filter(o=>o.label==="Circu Pycnogenol").reduce((s,o)=>s+o.margin,0)},
+    {label:"Magduo K2",v:data.filter(o=>o.label==="Magduo K2").reduce((s,o)=>s+o.margin,0)},
+  ].filter(d=>d.v>0);
+  if(chartYDY) chartYDY.destroy();
+  chartYDY=new Chart(document.getElementById("chart-ydy"),{
+    type:"doughnut",
+    data:{labels:ydyData.map(d=>d.label),datasets:[{data:ydyData.map(d=>d.v),backgroundColor:["#7c3aed","#a78bfa","#10b981","#f59e0b"],borderWidth:2}]},
+    options:{plugins:{legend:{position:"right",labels:{font:{size:11}}}},cutout:"55%"}
+  });
+}
+
+// ─── Tab switching ────────────────────────────────────────────────────────────
+function switchTab(name) {
+  const names=["total","mylabs","ydy","costs","manage"];
+  document.querySelectorAll(".tab").forEach((t,i)=>t.classList.toggle("active",names[i]===name));
+  document.querySelectorAll(".tab-content").forEach(c=>c.classList.remove("active"));
+  document.getElementById("tab-"+name).classList.add("active");
+}
+
+// ─── Add data modal ───────────────────────────────────────────────────────────
+function openAddModal() {
+  document.getElementById("add-modal").classList.add("open");
+  document.getElementById("input-error").style.display="none";
+}
+function closeAddModal() {
+  document.getElementById("add-modal").classList.remove("open");
+  document.getElementById("input-period-label").value="";
+  document.getElementById("input-period-id").value="";
+  document.getElementById("input-json").value="";
+}
+function saveNewData() {
+  const label=document.getElementById("input-period-label").value.trim();
+  const id=document.getElementById("input-period-id").value.trim();
+  const jsonText=document.getElementById("input-json").value.trim();
+  const errEl=document.getElementById("input-error");
+
+  if(!label||!id){errEl.textContent="기간 이름과 ID를 입력해주세요.";errEl.style.display="block";return;}
+  if(!jsonText){errEl.textContent="주문 데이터를 입력해주세요.";errEl.style.display="block";return;}
+
+  let orders;
+  try { orders=JSON.parse(jsonText); }
+  catch(e){errEl.textContent="JSON 형식이 올바르지 않습니다: "+e.message;errEl.style.display="block";return;}
+
+  if(!Array.isArray(orders)||orders.length===0){errEl.textContent="주문 데이터가 배열 형식이어야 합니다.";errEl.style.display="block";return;}
+
+  const required=["label","channel","brand","qty","settlement","sales","cost_usd"];
+  const missing=required.filter(k=>!orders[0].hasOwnProperty(k));
+  if(missing.length>0){errEl.textContent="필수 필드 누락: "+missing.join(", ");errEl.style.display="block";return;}
+
+  const extras=loadExtraPeriods();
+  if(extras.find(p=>p.id===id)||id===BASE_PERIOD.id){errEl.textContent="이미 존재하는 기간 ID입니다.";errEl.style.display="block";return;}
+
+  extras.push({id, label, orders});
+  saveExtraPeriods(extras);
+  closeAddModal();
+  buildPeriodPills();
+  updateAll();
+}
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+buildPeriodPills();
+updateAll();
+fetchRate();
+</script>
+</body>
+</html>
