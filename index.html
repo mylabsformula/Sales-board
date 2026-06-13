@@ -3,628 +3,276 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>세일즈 정산 보드</title>
+<title>세일즈 정산 보드 (06/08 ~ 06/14)</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f4f6fb;color:#1a1a2e;font-size:13px;}
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; background: #f0f2f5; color: #1a1a2e; }
 
-.header{background:linear-gradient(135deg,#1e2d5a,#2d4a8a);color:#fff;padding:11px 18px;display:flex;align-items:center;justify-content:space-between;}
-.header h1{font-size:15px;font-weight:700;}
-.rate-chip{background:rgba(255,255,255,.2);border-radius:20px;padding:3px 9px;font-weight:700;font-size:11px;}
-.rate-src{font-size:10px;opacity:.7;}
+  header {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    color: white; padding: 24px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  header h1 { font-size: 1.5rem; font-weight: 700; }
+  header .sub { font-size: 0.82rem; color: #8892b0; margin-top: 4px; }
+  .period-tag { background: #0f3460; padding: 8px 16px; border-radius: 20px; font-size: 0.82rem; }
 
-.period-bar{background:#fff;border-bottom:1px solid #e5e7eb;padding:7px 18px;display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
-.period-label{font-size:10px;font-weight:600;color:#9ca3af;}
-.pill{padding:2px 10px;border-radius:20px;border:1px solid #e5e7eb;font-size:11px;font-weight:600;cursor:pointer;color:#6b7280;white-space:nowrap;}
-.pill:hover{border-color:#2d4a8a;color:#2d4a8a;}
-.pill.active{background:#1e2d5a;color:#fff;border-color:#1e2d5a;}
-.pill .cnt{opacity:.6;font-size:10px;}
+  .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
 
-/* P&L flow strip */
-.flow-strip{display:flex;align-items:stretch;background:#fff;border-bottom:1px solid #e5e7eb;}
-.flow-item{flex:1;text-align:center;padding:10px 6px;border-right:1px solid #f3f4f6;min-width:0;}
-.flow-item:last-child{border-right:none;}
-.flow-item .fl{font-size:9px;color:#9ca3af;margin-bottom:2px;white-space:nowrap;}
-.flow-item .fv{font-size:14px;font-weight:800;color:#1e2d5a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.flow-item .fs{font-size:9px;color:#b0b7c3;margin-top:1px;}
-.flow-item.orange .fv{color:#d97706;}
-.flow-item.red .fv{color:#dc2626;}
-.flow-item.green .fv{color:#059669;}
+  .assumption { background: #fef9c3; border: 1px solid #fde047; border-radius: 8px; padding: 10px 16px; margin-bottom: 20px; font-size: 0.8rem; color: #713f12; }
+  .assumption strong { font-weight: 700; }
 
-/* Brand summary */
-.brand-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:10px 18px;}
-.brand-card{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:10px 12px;}
-.bc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
-.bc-name{font-size:12px;font-weight:700;color:#1e2d5a;}
-.bc-mar{font-size:15px;font-weight:800;color:#059669;}
-.bc-pct{font-size:10px;color:#9ca3af;margin-left:3px;}
-.bc-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;}
-.bc-stat{background:#f9fafb;border-radius:5px;padding:4px 6px;text-align:center;}
-.bc-stat .l{font-size:9px;color:#9ca3af;}
-.bc-stat .v{font-size:11px;font-weight:700;color:#374151;}
-.bc-stat.orange .v{color:#d97706;}
-.bc-stat.red .v{color:#dc2626;}
+  .kpi-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-bottom: 24px; }
+  .kpi-card { background: white; border-radius: 12px; padding: 18px 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border-top: 4px solid var(--accent); }
+  .kpi-card .label { font-size: 0.74rem; color: #6b7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px; }
+  .kpi-card .value { font-size: 1.5rem; font-weight: 800; color: #1a1a2e; line-height: 1; }
+  .kpi-card .sub { font-size: 0.75rem; color: #9ca3af; margin-top: 6px; }
 
-/* Tabs */
-.main-wrap{padding:0 18px 20px;}
-.card{background:#fff;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;}
-.tabs{display:flex;border-bottom:1px solid #f3f4f6;overflow-x:auto;}
-.tab{padding:9px 14px;font-size:12px;font-weight:600;cursor:pointer;color:#9ca3af;border-bottom:2px solid transparent;white-space:nowrap;flex-shrink:0;}
-.tab.active{color:#1e2d5a;border-bottom-color:#1e2d5a;}
-.tab-body{display:none;padding:14px 16px;}
-.tab-body.active{display:block;}
+  .section { background: white; border-radius: 12px; padding: 22px 24px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .section-title { font-size: 0.95rem; font-weight: 700; color: #1a1a2e; margin-bottom: 18px; display: flex; align-items: center; gap: 8px; }
+  .icon-box { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; flex-shrink:0; }
 
-/* Section block */
-.sec-block{margin-bottom:16px;}
-.sec-block:last-child{margin-bottom:0;}
+  table { width: 100%; border-collapse: collapse; }
+  th { background: #f8fafc; font-size: 0.77rem; color: #6b7280; font-weight: 700; padding: 10px 12px; text-align: left; border-bottom: 2px solid #e5e7eb; white-space: nowrap; }
+  td { font-size: 0.85rem; padding: 10px 12px; border-bottom: 1px solid #f0f2f5; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #fafbff; }
+  .total-row td { font-weight: 700; background: #f8fafc !important; }
+  .num { text-align: right; font-variant-numeric: tabular-nums; }
+  .margin-positive { color: #166534; font-weight: 700; }
 
-/* Section header with mini P&L */
-.sec-head{border-radius:8px 8px 0 0;padding:9px 12px;border:1px solid #e5e7eb;border-bottom:none;}
-.sec-head.blue{background:linear-gradient(90deg,#eff6ff,#f8faff);border-color:#bfdbfe;}
-.sec-head.purple{background:linear-gradient(90deg,#faf5ff,#f5f3ff);border-color:#e9d5ff;}
-.sec-head.blue-light{background:linear-gradient(90deg,#f0f9ff,#f8faff);border-color:#bae6fd;}
-.sec-head.purple-light{background:linear-gradient(90deg,#fdf4ff,#faf5ff);border-color:#f0abfc;}
-.sh-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
-.sh-title{font-size:13px;font-weight:700;}
-.sh-title.blue{color:#1d4ed8;}
-.sh-title.purple{color:#5b21b6;}
-.sh-mar{font-size:15px;font-weight:800;color:#059669;}
-.sh-pct{font-size:11px;color:#9ca3af;margin-left:4px;font-weight:400;}
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.72rem; font-weight: 600; }
+  .b-smart { background:#dcfce7; color:#166534; }
+  .b-coupang { background:#fee2e2; color:#991b1b; }
+  .b-11st { background:#dbeafe; color:#1e40af; }
+  .b-ydy { background:#f3e8ff; color:#6b21a8; }
+  .b-mylabs { background:#e0f2fe; color:#0369a1; }
+  .b-new { background:#fef3c7; color:#92400e; border: 1px solid #f59e0b; }
 
-/* Mini flow inside section */
-.mini-flow{display:flex;align-items:center;gap:3px;flex-wrap:wrap;}
-.mf-chip{font-size:11px;font-weight:600;background:rgba(255,255,255,.8);border:1px solid #e5e7eb;border-radius:5px;padding:2px 8px;white-space:nowrap;}
-.mf-chip .mv{font-weight:700;}
-.mf-chip.orange .mv{color:#d97706;}
-.mf-chip.red .mv{color:#dc2626;}
-.mf-chip.green .mv{color:#059669;}
-.mf-arrow{color:#d1d5db;font-size:11px;flex-shrink:0;}
+  .rate-cell { display: flex; align-items: center; gap: 8px; }
+  .rate-bar { flex: 1; height: 8px; background: #f0f2f5; border-radius: 4px; overflow: hidden; min-width: 60px; }
+  .rate-fill { height: 100%; border-radius: 4px; }
+  .rate-text { font-size: 0.82rem; font-weight: 700; width: 42px; text-align: right; flex-shrink:0; }
 
-/* Pharmacist sub-card */
-.ph-card{border:1px solid #e9d5ff;border-radius:0 0 8px 8px;overflow:hidden;}
-.ph-sub-head{background:#faf5ff;padding:7px 12px;border-bottom:1px solid #e9d5ff;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
-.ph-label{font-size:11px;font-weight:700;color:#5b21b6;}
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 
-/* Table container */
-.tbl-wrap{border:1px solid #e5e7eb;border-radius:0 0 8px 8px;overflow:hidden;}
-.tbl-wrap.ph{border-color:#e9d5ff;}
-table{width:100%;border-collapse:collapse;}
-th{font-size:10px;font-weight:700;color:#9ca3af;padding:6px 10px;border-bottom:1px solid #f3f4f6;text-align:right;white-space:nowrap;background:#fafafa;}
-th.left{text-align:left;}
-td{padding:7px 10px;border-bottom:1px solid #f9fafb;font-size:12px;text-align:right;vertical-align:middle;}
-td.left{text-align:left;}
-tr:last-child td{border-bottom:none;}
-tr:hover td{background:#fafafa;}
-.total-row td{font-weight:700;background:#f9fafb;border-top:1px solid #e9ecef;}
+  .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .bar-label { width: 200px; font-size: 0.8rem; color: #374151; flex-shrink:0; }
+  .bar-track { flex: 1; height: 20px; background: #f0f2f5; border-radius: 5px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 5px; display: flex; align-items: center; padding: 0 8px; }
+  .bar-fill span { font-size: 0.72rem; color: white; font-weight: 600; white-space: nowrap; }
+  .bar-pct { width: 80px; font-size: 0.78rem; color: #374151; font-weight: 700; text-align: right; }
 
-.tag{display:inline-block;padding:1px 5px;border-radius:4px;font-size:10px;font-weight:700;}
-.tag-ml{background:#dbeafe;color:#1e40af;}
-.tag-ydy{background:#ede9fe;color:#5b21b6;}
-.tag-smart{background:#dcfce7;color:#166534;}
-.tag-cp{background:#fee2e2;color:#b91c1c;}
-.tag-11st{background:#fef9c3;color:#854d0e;}
+  .footnote { text-align:center; color:#9ca3af; font-size:0.73rem; padding:16px 0 8px; }
 
-.bar-wrap{display:flex;align-items:center;justify-content:flex-end;gap:4px;}
-.bar-bg{width:40px;height:4px;background:#f3f4f6;border-radius:2px;overflow:hidden;flex-shrink:0;}
-.bar-fill{height:100%;border-radius:2px;}
-.pv{font-size:11px;font-weight:700;min-width:36px;text-align:right;}
-
-.green{color:#059669;}.red{color:#dc2626;}.orange{color:#d97706;}.gray{color:#9ca3af;}.bold{font-weight:700;}
-.warn{background:#fef3c7;border-left:3px solid #fcd34d;padding:6px 10px;font-size:11px;color:#92400e;margin-top:0;}
-
-.cost-scroll{overflow-x:auto;}
-.est-badge{display:inline-block;font-size:9px;font-weight:700;background:#fef3c7;color:#92400e;border-radius:3px;padding:0 4px;margin-left:3px;vertical-align:middle;}
-.comm-note{background:#fffbeb;border:1px solid #fde68a;border-radius:7px;padding:8px 12px;font-size:11px;color:#78350f;margin-bottom:12px;line-height:1.6;}
-.footer{text-align:center;font-size:10px;color:#d1d5db;padding:10px;}
+  @media (max-width: 900px) {
+    .kpi-grid { grid-template-columns: repeat(3, 1fr); }
+    .two-col { grid-template-columns: 1fr; }
+    .bar-label { width: 130px; }
+  }
 </style>
 </head>
 <body>
 
-<div class="header">
-  <h1>📊 세일즈 정산 보드</h1>
-  <div style="display:flex;align-items:center;gap:8px;">
-    <span class="rate-src" id="rate-src"></span>
-    <span class="rate-chip" id="rate-chip">$1 = ₩—</span>
+<header>
+  <div>
+    <h1>📊 세일즈 정산 보드</h1>
+    <div class="sub">Google Drive 주문 파일 2개 · 채널: 스마트스토어 / 쿠팡 (11번가 주문 없음)</div>
   </div>
-</div>
+  <div class="period-tag">📅 2026.06.08 – 06.14 (2주차)</div>
+</header>
 
-<div class="period-bar">
-  <span class="period-label">기간</span>
-  <div id="period-pills"></div>
-</div>
+<div class="container">
 
-<!-- Overall P&L flow -->
-<div class="flow-strip">
-  <div class="flow-item"><div class="fl">총 주문</div><div class="fv" id="f-orders">—</div><div class="fs" id="f-periods">—</div></div>
-  <div class="flow-item"><div class="fl">총 매출</div><div class="fv" id="f-sales">—</div><div class="fs">전체</div></div>
-  <div class="flow-item orange"><div class="fl">수수료</div><div class="fv" id="f-comm">—</div><div class="fs" id="f-comm-pct">—</div></div>
-  <div class="flow-item"><div class="fl">정산 예정액</div><div class="fv" id="f-set">—</div><div class="fs">차감 후</div></div>
-  <div class="flow-item red"><div class="fl">원가+배송</div><div class="fv" id="f-cost">—</div><div class="fs" id="f-rate">@환율</div></div>
-  <div class="flow-item green"><div class="fl">순마진</div><div class="fv" id="f-margin">—</div><div class="fs" id="f-mpct">—</div></div>
-</div>
+  <div class="assumption">
+    ⚠️ <strong>계산 기준:</strong> 환율 <strong>1,558 KRW/USD</strong> (실시간 · 2026-06-12 기준) · 기본 배송비 <strong>$4.80/건</strong> · 쿠팡 수수료 <strong>13.09%</strong> 적용 (건강식품 9% + 결제수수료 2.9% + 부가세 10%) · 스마트스토어 정산금액은 파일 기준 (수수료 기반영) · <strong>YDY BQ10 신규 상품</strong> 원가 $16.49/병 적용 · 파일 기준일: 2026-06-12 (주차 미완료 데이터)
+  </div>
 
-<!-- Brand cards -->
-<div class="brand-row">
-  <div class="brand-card">
-    <div class="bc-head"><span class="bc-name">🔵 Mylabs</span><span><span class="bc-mar" id="bc-ml-mar">—</span><span class="bc-pct" id="bc-ml-pct">—</span></span></div>
-    <div class="bc-stats">
-      <div class="bc-stat"><div class="l">주문</div><div class="v" id="bc-ml-qty">—</div></div>
-      <div class="bc-stat orange"><div class="l">수수료</div><div class="v" id="bc-ml-comm">—</div></div>
-      <div class="bc-stat red"><div class="l">원가</div><div class="v" id="bc-ml-cost">—</div></div>
+  <div class="kpi-grid">
+    <div class="kpi-card" style="--accent:#3b82f6">
+      <div class="label">총 주문</div>
+      <div class="value">15건</div>
+      <div class="sub">파일 2개</div>
+    </div>
+    <div class="kpi-card" style="--accent:#10b981">
+      <div class="label">총 매출</div>
+      <div class="value">₩1,464,400</div>
+      <div class="sub">전체 채널 결제금액</div>
+    </div>
+    <div class="kpi-card" style="--accent:#f59e0b">
+      <div class="label">정산 예정액</div>
+      <div class="value">₩1,342,888</div>
+      <div class="sub">쿠팡 수수료 13.09% 반영</div>
+    </div>
+    <div class="kpi-card" style="--accent:#ef4444">
+      <div class="label">원가 + 배송비</div>
+      <div class="value">₩787,081</div>
+      <div class="sub">@1,558 KRW/USD (실시간)</div>
+    </div>
+    <div class="kpi-card" style="--accent:#8b5cf6">
+      <div class="label">순마진</div>
+      <div class="value" style="color:#166534">₩555,807</div>
+      <div class="sub" style="color:#d97706;font-weight:700">마진율 41.4% ⚠️ BQ10 영향</div>
     </div>
   </div>
-  <div class="brand-card">
-    <div class="bc-head"><span class="bc-name">🟣 YDY</span><span><span class="bc-mar" id="bc-ydy-mar">—</span><span class="bc-pct" id="bc-ydy-pct">—</span></span></div>
-    <div class="bc-stats">
-      <div class="bc-stat"><div class="l">주문</div><div class="v" id="bc-ydy-qty">—</div></div>
-      <div class="bc-stat orange"><div class="l">수수료</div><div class="v" id="bc-ydy-comm">—</div></div>
-      <div class="bc-stat red"><div class="l">원가</div><div class="v" id="bc-ydy-cost">—</div></div>
+
+  <div class="section">
+    <div class="section-title">
+      <div class="icon-box" style="background:#f3e8ff">💰</div>
+      상품별 순마진 분석
     </div>
-  </div>
-</div>
-
-<!-- Tabs -->
-<div class="main-wrap">
-<div class="card">
-  <div class="tabs">
-    <div class="tab active" onclick="switchTab('total')">전체 요약</div>
-    <div class="tab" onclick="switchTab('mylabs')">🔵 Mylabs</div>
-    <div class="tab" onclick="switchTab('ydy')">🟣 YDY</div>
-    <div class="tab" onclick="switchTab('costs')">💰 원가표</div>
-  </div>
-
-  <!-- 전체 요약 -->
-  <div class="tab-body active" id="tab-total">
-    <div id="channel-summary"></div>
-    <div id="total-ydy-gonggu"></div>
-    <div id="total-ydy-sansi"></div>
-    <div id="total-ml-gonggu"></div>
-    <div id="total-ml-sansi"></div>
-  </div>
-
-  <!-- Mylabs -->
-  <div class="tab-body" id="tab-mylabs">
-    <div id="ml-gonggu"></div>
-    <div id="ml-sansi"></div>
-  </div>
-
-  <!-- YDY -->
-  <div class="tab-body" id="tab-ydy">
-    <div id="ydy-gonggu"></div>
-    <div id="ydy-sansi"></div>
-  </div>
-
-  <!-- 원가표 -->
-  <div class="tab-body" id="tab-costs">
-    <div style="font-size:11px;color:#9ca3af;margin-bottom:8px;">환율 <strong id="cost-rate">—</strong> 적용 기준 · 배송비 포함</div>
-    <div class="cost-scroll">
-      <table style="min-width:560px;">
-        <thead><tr><th class="left">브랜드</th><th class="left">상품</th><th>단위원가(USD)</th><th>배송비(USD)</th><th>1pk</th><th>2pk</th><th>3pk</th></tr></thead>
-        <tbody id="cost-tbody"></tbody>
-      </table>
-    </div>
-  </div>
-</div>
-</div>
-
-<div class="footer" id="footer">로딩 중…</div>
-
-<script>
-// ── Data ──────────────────────────────────────────────────────────────────────
-// comm_basis: "actual" = 파일 실제값, "est" = 추정값
-// 쿠팡: 식품·건강 8.8% + 결제수수료 2.9% + 부가세 10% = 실질 약 12.9%
-// 11번가: 건강기능식품 약 11% (Lavita는 판매자할인+서비스료 실제값)
-const PERIODS_DATA = [
-  {
-    id:"2026-05-w4", label:"2026년 5월 4주차",
-    orders:[
-      {label:"Berberine Alpha 3pk",  channel:"스마트스토어",brand:"Mylabs",type:"상시",comm_basis:"actual", qty:10,settlement:1235290,sales:1323000,cost_usd:30.18},
-      {label:"Berberine Alpha 1pk",  channel:"스마트스토어",brand:"Mylabs",type:"상시",comm_basis:"actual", qty:1, settlement:45752,  sales:46000,  cost_usd:13.26},
-      {label:"VS Formula Prime 3pk", channel:"스마트스토어",brand:"Mylabs",type:"상시",comm_basis:"actual", qty:3, settlement:351940, sales:372600, cost_usd:20.37},
-      {label:"VS Formula Prime 2pk", channel:"쿠팡",        brand:"Mylabs",type:"상시",comm_basis:"est",    qty:2, settlement:160264, sales:184000, cost_usd:15.18},
-      {label:"VS Formula Prime 1pk", channel:"스마트스토어",brand:"Mylabs",type:"상시",comm_basis:"actual", qty:5, settlement:221705, sales:230000, cost_usd:9.99},
-      {label:"VS Formula Prime 1pk", channel:"11번가",      brand:"Mylabs",type:"상시",comm_basis:"est",    qty:1, settlement:40940,  sales:46000,  cost_usd:9.99},
-      {label:"VS Formula Prime 1pk", channel:"스마트스토어",brand:"Mylabs",type:"공구",comm_basis:"actual", pharmacist:"형제약사",qty:1,settlement:42951,sales:46000,cost_usd:9.99},
-      {label:"YDY BQ10 3개묶음",     channel:"스마트스토어",brand:"YDY",  type:"공구",comm_basis:"actual", pharmacist:"형제약사",qty:44,settlement:4443428,sales:4752000,cost_usd:56.77},
-      {label:"YDY BQ10 6개묶음",     channel:"스마트스토어",brand:"YDY",  type:"공구",comm_basis:"actual", pharmacist:"형제약사",qty:35,settlement:6494320,sales:7560000,cost_usd:107.24},
-      {label:"Circu Pycnogenol",     channel:"스마트스토어",brand:"YDY",  type:"상시",comm_basis:"actual", qty:1, settlement:133053, sales:160000, cost_usd:27.79},
-      {label:"Magduo K2",            channel:"스마트스토어",brand:"YDY",  type:"상시",comm_basis:"actual", qty:1, settlement:51447,  sales:55000,  cost_usd:14.79},
-    ]
-  },
-  {
-    id:"2026-06-w1", label:"2026년 6월 1주차",
-    note:"⚠ 부분 데이터 (6/1 파일 미수신, YDY공구·쿠팡 미포함)",
-    orders:[
-      // Mylabs 공구 - 봄약사 (6/5 스마트스토어)
-      {label:"Berberine Alpha 6pk", channel:"스마트스토어",brand:"Mylabs",type:"공구",comm_basis:"actual", pharmacist:"봄약사",qty:1,settlement:172735,sales:185000,cost_usd:55.56},
-      // Mylabs 상시 - 스마트스토어
-      {label:"Berberine Alpha 1pk", channel:"스마트스토어",brand:"Mylabs",type:"상시",comm_basis:"actual", qty:5, settlement:228760, sales:245000, cost_usd:13.26},
-      {label:"Berberine Alpha 3pk", channel:"스마트스토어",brand:"Mylabs",type:"상시",comm_basis:"actual", qty:4, settlement:494117, sales:529200, cost_usd:30.18},
-      {label:"VS Formula Prime 3pk",channel:"스마트스토어",brand:"Mylabs",type:"상시",comm_basis:"actual", qty:1, settlement:115967, sales:124200, cost_usd:20.37},
-      // Mylabs 상시 - 11번가 Lavita (실제 정산: 판매자할인10%+서비스료13% 포함)
-      {label:"VS Formula Prime 3pk",channel:"11번가",      brand:"Mylabs",type:"상시",comm_basis:"actual", qty:2, settlement:207000, sales:276000, cost_usd:20.37},
-      // YDY 상시 - 스마트스토어
-      {label:"Magduo K2 2pk",       channel:"스마트스토어",brand:"YDY",  type:"상시",comm_basis:"actual", qty:1, settlement:51448,  sales:55100,  cost_usd:24.78},
-      {label:"Magduo K2 3pk",       channel:"스마트스토어",brand:"YDY",  type:"상시",comm_basis:"actual", qty:1, settlement:73109,  sales:78300,  cost_usd:34.77},
-    ]
-  },
-  {
-    id:"2026-06-w2", label:"2026년 6월 2주차",
-    note:"⚠ 부분 데이터 (11번가·쿠팡 미포함, 6/13 일부 주문 포함)",
-    orders:[
-      // Mylabs 공구 - 봄약사
-      {label:"Berberine Alpha 3pk", channel:"스마트스토어",brand:"Mylabs",type:"공구",comm_basis:"actual", pharmacist:"봄약사",qty:2, settlement:203548, sales:218000,  cost_usd:30.18},
-      // Mylabs 상시 - 스마트스토어
-      {label:"Berberine Alpha 1pk", channel:"스마트스토어",brand:"Mylabs",type:"상시",comm_basis:"actual", qty:1, settlement:45752,  sales:49000,   cost_usd:13.26},
-      {label:"Berberine Alpha 3pk", channel:"스마트스토어",brand:"Mylabs",type:"상시",comm_basis:"actual", qty:4, settlement:494116, sales:529200,  cost_usd:30.18},
-      {label:"VS Formula Prime 1pk",channel:"스마트스토어",brand:"Mylabs",type:"상시",comm_basis:"actual", qty:2, settlement:85902,  sales:92000,   cost_usd:9.99},
-      {label:"VS Formula Prime 3pk",channel:"스마트스토어",brand:"Mylabs",type:"상시",comm_basis:"actual", qty:5, settlement:582168, sales:621000,  cost_usd:20.37},
-      // YDY 상시 - 스마트스토어
-      {label:"YDY BQ10 2pk",        channel:"스마트스토어",brand:"YDY",  type:"상시",comm_basis:"actual", qty:22,settlement:1873390,sales:2005400, cost_usd:40.28},
-      {label:"YDY BQ10 3pk",        channel:"스마트스토어",brand:"YDY",  type:"상시",comm_basis:"actual", qty:8, settlement:968064, sales:1036800, cost_usd:56.77},
-      {label:"Magduo K2 3pk",       channel:"스마트스토어",brand:"YDY",  type:"상시",comm_basis:"actual", qty:2, settlement:146218, sales:156600,  cost_usd:34.77},
-      {label:"Circu Pycnogenol 2pk",channel:"스마트스토어",brand:"YDY",  type:"상시",comm_basis:"actual", qty:1, settlement:133053, sales:142500,  cost_usd:50.78},
-      {label:"NAD+ 3pk",            channel:"스마트스토어",brand:"YDY",  type:"상시",comm_basis:"actual", qty:1, settlement:173949, sales:186300,  cost_usd:58.77},
-      {label:"NAD+ 2pk",            channel:"스마트스토어",brand:"YDY",  type:"상시",comm_basis:"actual", qty:1, settlement:122409, sales:131100,  cost_usd:40.78},
-    ]
-  },
-];
-const COST_TABLE = [
-  {brand:"Mylabs",product:"Berberine Alpha",     unit:8.46, ship:4.80},
-  {brand:"Mylabs",product:"VS Formula Prime",    unit:5.19, ship:4.80},
-  {brand:"YDY",   product:"All Active BQ10",     unit:16.49,ship3:7.30,ship6:8.30,bq10:true},
-  {brand:"YDY",   product:"Circu Pycnogenol",    unit:22.99,ship:4.80},
-  {brand:"YDY",   product:"Magduo K2",           unit:9.99, ship:4.80},
-  {brand:"YDY",   product:"NAD+",                unit:17.99,ship:4.80},
-  {brand:"YDY",   product:"Berberine Phytosome", unit:15.99,ship:4.80},
-];
-
-// ── State ─────────────────────────────────────────────────────────────────────
-let RATE=1506.83, rateSrc="캐시", selPeriod="all";
-const LS="sb_v5";
-function loadExtra(){try{return JSON.parse(localStorage.getItem(LS))||[];}catch{return[];}}
-function allOrders(){return[...PERIODS_DATA.flatMap(p=>p.orders.map(o=>({...o,period:p.id}))),...loadExtra().flatMap(p=>p.orders.map(o=>({...o,period:p.id})))];}
-function allPeriods(){return[...PERIODS_DATA,...loadExtra()];}
-function filtered(){const a=allOrders();return selPeriod==="all"?a:a.filter(o=>o.period===selPeriod);}
-function calc(arr){return arr.map(o=>({...o,cost_krw:o.cost_usd*RATE*o.qty,commission:o.sales-o.settlement,margin:o.settlement-o.cost_usd*RATE*o.qty}));}
-
-// ── Utils ─────────────────────────────────────────────────────────────────────
-const fmt =n=>"₩"+Math.round(n).toLocaleString("ko-KR");
-const man =n=>"₩"+(Math.round(n/10000)).toLocaleString("ko-KR")+"만";
-const pct =n=>(n*100).toFixed(1)+"%";
-const bclr=p=>p>.6?"#059669":p>.3?"#2563eb":p>.1?"#d97706":"#dc2626";
-const tagMap={"스마트스토어":"tag-smart","쿠팡":"tag-cp","11번가":"tag-11st"};
-const sum=(arr,k)=>arr.reduce((s,o)=>s+(o[k]||0),0);
-
-// ── Rate ──────────────────────────────────────────────────────────────────────
-async function fetchRate(){
-  try{const d=await(await fetch("https://api.exchangerate-api.com/v4/latest/USD")).json();RATE=d.rates.KRW;rateSrc=d.date+" 기준";}
-  catch{try{const d=await(await fetch("https://open.er-api.com/v6/latest/USD")).json();RATE=d.rates.KRW;rateSrc="실시간";}catch{}}
-  renderAll();
-}
-
-// ── Pills ─────────────────────────────────────────────────────────────────────
-function renderPills(){
-  const orders=allOrders(),tq=sum(orders,"qty");
-  let h=`<span class="pill ${selPeriod==="all"?"active":""}" onclick="setPeriod('all')">전체 <span class="cnt">${tq}건</span></span>`;
-  allPeriods().forEach(p=>{const q=sum(orders.filter(o=>o.period===p.id),"qty");h+=`<span class="pill ${selPeriod===p.id?"active":""}" onclick="setPeriod('${p.id}')">${p.label} <span class="cnt">${q}건</span></span>`;});
-  document.getElementById("period-pills").innerHTML=h;
-}
-function setPeriod(id){selPeriod=id;renderPills();renderAll();}
-
-// ── Main render ───────────────────────────────────────────────────────────────
-function renderAll(){
-  const data=calc(filtered());
-  const tq=sum(data,"qty"),ts=sum(data,"sales"),tc=sum(data,"commission"),tset=sum(data,"settlement"),tcost=sum(data,"cost_krw"),tmar=sum(data,"margin");
-
-  document.getElementById("rate-chip").textContent=`$1 = ₩${RATE.toFixed(0)}`;
-  document.getElementById("rate-src").textContent=rateSrc;
-  document.getElementById("cost-rate").textContent=`$1 = ₩${RATE.toFixed(0)}`;
-  document.getElementById("f-orders").textContent=tq+"건";
-  document.getElementById("f-periods").textContent=allPeriods().length+"개 기간";
-  document.getElementById("f-sales").textContent=fmt(ts);
-  document.getElementById("f-comm").textContent=fmt(tc);
-  document.getElementById("f-comm-pct").textContent=ts>0?pct(tc/ts):"—";
-  document.getElementById("f-set").textContent=fmt(tset);
-  document.getElementById("f-cost").textContent=fmt(tcost);
-  document.getElementById("f-rate").textContent=`@${RATE.toFixed(0)}`;
-  document.getElementById("f-margin").textContent=fmt(tmar);
-  document.getElementById("f-mpct").textContent=tset>0?`마진율 ${pct(tmar/tset)}`:"—";
-
-  ["Mylabs","YDY"].forEach(b=>{
-    const bd=data.filter(o=>o.brand===b);
-    const bset=sum(bd,"settlement"),bmar=sum(bd,"margin"),bcomm=sum(bd,"commission"),bcost=sum(bd,"cost_krw"),bq=sum(bd,"qty");
-    const pfx=b==="Mylabs"?"bc-ml":"bc-ydy";
-    document.getElementById(pfx+"-mar").textContent=fmt(bmar);
-    document.getElementById(pfx+"-pct").textContent=bset>0?` (${pct(bmar/bset)})`:"";
-    document.getElementById(pfx+"-qty").textContent=bq+"건";
-    document.getElementById(pfx+"-comm").textContent=man(bcomm);
-    document.getElementById(pfx+"-cost").textContent=man(bcost);
-  });
-
-  // 채널별 요약
-  renderChannelSummary(data);
-
-  // 전체 요약: YDY공구 → YDY상시 → Mylabs공구 → Mylabs상시
-  renderSection(data,"YDY","공구","total-ydy-gonggu");
-  renderSection(data,"YDY","상시","total-ydy-sansi");
-  renderSection(data,"Mylabs","공구","total-ml-gonggu");
-  renderSection(data,"Mylabs","상시","total-ml-sansi");
-  // 브랜드 탭
-  renderSection(data,"Mylabs","공구","ml-gonggu");
-  renderSection(data,"Mylabs","상시","ml-sansi");
-  renderSection(data,"YDY","공구","ydy-gonggu");
-  renderSection(data,"YDY","상시","ydy-sansi");
-
-  renderCosts();
-  document.getElementById("footer").textContent=`${new Date().toLocaleString("ko-KR")} 기준 · 환율 ${rateSrc} · ${allPeriods().length}개 기간`;
-}
-
-// ── Channel summary ───────────────────────────────────────────────────────────
-function renderChannelSummary(data) {
-  const ch = {};
-  const ORDER = ["스마트스토어","쿠팡","11번가"];
-  data.forEach(o => {
-    if(!ch[o.channel]) ch[o.channel]={qty:0,sales:0,commission:0,settlement:0,cost:0,margin:0,hasEst:false};
-    ch[o.channel].qty        += o.qty;
-    ch[o.channel].sales      += o.sales;
-    ch[o.channel].commission += o.commission;
-    ch[o.channel].settlement += o.settlement;
-    ch[o.channel].cost       += o.cost_krw;
-    ch[o.channel].margin     += o.margin;
-    if(o.comm_basis==="est") ch[o.channel].hasEst=true;
-  });
-
-  const channels = ORDER.filter(c=>ch[c]).concat(Object.keys(ch).filter(c=>!ORDER.includes(c)));
-  let rows="";
-  let tot={qty:0,sales:0,commission:0,settlement:0,cost:0,margin:0};
-
-  for(const c of channels){
-    const v=ch[c];
-    const mp=v.settlement>0?v.margin/v.settlement:0;
-    const cp=v.sales>0?v.commission/v.sales:0;
-    const estBadge=v.hasEst?`<span class="est-badge">추정</span>`:"";
-    rows+=`<tr>
-      <td class="left"><span class="tag ${tagMap[c]||""}">${c}</span></td>
-      <td>${v.qty}건</td>
-      <td>${fmt(v.sales)}</td>
-      <td class="orange">▼${fmt(v.commission)} <span class="gray" style="font-size:10px">(${pct(cp)})</span>${estBadge}</td>
-      <td>${fmt(v.settlement)}</td>
-      <td class="red">▼${fmt(v.cost)}</td>
-      <td class="green bold">${fmt(v.margin)}</td>
-      <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:${Math.max(0,mp*100)}%;background:${bclr(mp)}"></div></div><span class="pv" style="color:${bclr(mp)}">${pct(mp)}</span></div></td>
-    </tr>`;
-    tot.qty+=v.qty; tot.sales+=v.sales; tot.commission+=v.commission;
-    tot.settlement+=v.settlement; tot.cost+=v.cost; tot.margin+=v.margin;
-  }
-  const totp=tot.settlement>0?tot.margin/tot.settlement:0;
-  const totcp=tot.sales>0?tot.commission/tot.sales:0;
-  rows+=`<tr class="total-row">
-    <td class="left">합계</td>
-    <td>${tot.qty}건</td>
-    <td>${fmt(tot.sales)}</td>
-    <td class="orange">▼${fmt(tot.commission)} <span class="gray" style="font-size:10px">(${pct(totcp)})</span></td>
-    <td>${fmt(tot.settlement)}</td>
-    <td class="red">▼${fmt(tot.cost)}</td>
-    <td class="green">${fmt(tot.margin)}</td>
-    <td class="green">${pct(totp)}</td>
-  </tr>`;
-
-  document.getElementById("channel-summary").innerHTML=`
-  <div class="sec-block">
-    <div class="sec-head" style="background:#f8faff;border-color:#c7d7f7;">
-      <div class="sh-top">
-        <span class="sh-title" style="color:#1e40af;">📦 채널별 정산 요약</span>
-        <span class="gray" style="font-size:11px;">스마트스토어 실제값 · 쿠팡/11번가 수수료 추정</span>
-      </div>
-    </div>
-    <div class="tbl-wrap" style="border-color:#c7d7f7;">
-      <table>
-        <thead><tr>
-          <th class="left">채널</th>
-          <th>건수</th>
-          <th>매출</th>
-          <th>수수료 (비율)</th>
-          <th>정산금액</th>
-          <th>원가+배송</th>
-          <th>순마진</th>
+    <table>
+      <thead>
+        <tr>
+          <th>상품</th>
+          <th class="num">건수</th>
+          <th class="num">정산 예정액</th>
+          <th class="num">원가 (COGS)</th>
+          <th class="num">배송비</th>
+          <th class="num">총 비용</th>
+          <th class="num">순마진</th>
           <th>마진율</th>
-        </tr></thead>
-        <tbody>${rows}</tbody>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="badge b-coupang">쿠팡</span> <span style="margin-left:6px">VS Formula Prime <strong>2pk</strong></span></td>
+          <td class="num">1건</td>
+          <td class="num">₩79,957 <span style="color:#9ca3af;font-size:0.75rem">(매출₩92,000)</span></td>
+          <td class="num" style="color:#6b7280">$10.38×1</td>
+          <td class="num" style="color:#6b7280">$4.80×1</td>
+          <td class="num">₩23,650</td>
+          <td class="num margin-positive">₩56,307</td>
+          <td><div class="rate-cell"><div class="rate-bar"><div class="rate-fill" style="width:70.4%;background:#3b82f6"></div></div><div class="rate-text" style="color:#3b82f6">70.4%</div></div></td>
+        </tr>
+        <tr>
+          <td><span class="badge b-smart">스마트</span> <span style="margin-left:6px">VS Formula Prime <strong>1pk</strong></span></td>
+          <td class="num">1건</td>
+          <td class="num">₩42,951</td>
+          <td class="num" style="color:#6b7280">$5.19×1</td>
+          <td class="num" style="color:#6b7280">$4.80×1</td>
+          <td class="num">₩15,564</td>
+          <td class="num margin-positive">₩27,387</td>
+          <td><div class="rate-cell"><div class="rate-bar"><div class="rate-fill" style="width:63.8%;background:#10b981"></div></div><div class="rate-text" style="color:#10b981">63.8%</div></div></td>
+        </tr>
+        <tr>
+          <td><span class="badge b-smart">스마트</span> <span style="margin-left:6px">Berberine Alpha <strong>3pk</strong></span></td>
+          <td class="num">1건</td>
+          <td class="num">₩123,529</td>
+          <td class="num" style="color:#6b7280">$25.38×1</td>
+          <td class="num" style="color:#6b7280">$4.80×1</td>
+          <td class="num">₩47,020</td>
+          <td class="num margin-positive">₩76,509</td>
+          <td><div class="rate-cell"><div class="rate-bar"><div class="rate-fill" style="width:61.9%;background:#10b981"></div></div><div class="rate-text" style="color:#10b981">61.9%</div></div></td>
+        </tr>
+        <tr>
+          <td><span class="badge b-smart">스마트</span> <span style="margin-left:6px">Berberine Alpha <strong>1pk</strong></span></td>
+          <td class="num">1건</td>
+          <td class="num">₩45,752</td>
+          <td class="num" style="color:#6b7280">$8.46×1</td>
+          <td class="num" style="color:#6b7280">$4.80×1</td>
+          <td class="num">₩20,659</td>
+          <td class="num margin-positive">₩25,093</td>
+          <td><div class="rate-cell"><div class="rate-bar"><div class="rate-fill" style="width:54.8%;background:#10b981"></div></div><div class="rate-text" style="color:#10b981">54.8%</div></div></td>
+        </tr>
+        <tr>
+          <td><span class="badge b-smart">스마트</span> <span class="badge b-ydy" style="margin-left:4px">YDY</span> <span style="margin-left:6px">NAD+ Tri Complex <strong>2pk</strong></span></td>
+          <td class="num">1건</td>
+          <td class="num">₩122,409</td>
+          <td class="num" style="color:#6b7280">$17.99×2</td>
+          <td class="num" style="color:#6b7280">$4.80×1</td>
+          <td class="num">₩63,535</td>
+          <td class="num margin-positive">₩58,874</td>
+          <td><div class="rate-cell"><div class="rate-bar"><div class="rate-fill" style="width:48.1%;background:#f59e0b"></div></div><div class="rate-text" style="color:#f59e0b">48.1%</div></div></td>
+        </tr>
+        <tr>
+          <td><span class="badge b-smart">스마트</span> <span class="badge b-ydy" style="margin-left:4px">YDY</span> <span style="margin-left:6px">NAD+ Tri Complex <strong>3pk</strong></span></td>
+          <td class="num">1건</td>
+          <td class="num">₩173,949</td>
+          <td class="num" style="color:#6b7280">$17.99×3</td>
+          <td class="num" style="color:#6b7280">$4.80×1</td>
+          <td class="num">₩91,574</td>
+          <td class="num margin-positive">₩82,375</td>
+          <td><div class="rate-cell"><div class="rate-bar"><div class="rate-fill" style="width:47.4%;background:#f59e0b"></div></div><div class="rate-text" style="color:#f59e0b">47.4%</div></div></td>
+        </tr>
+        <tr style="background:#fffbeb">
+          <td><span class="badge b-smart">스마트</span> <span class="badge b-new" style="margin-left:4px">NEW</span> <span style="margin-left:6px">YDY BQ10 CoQ10 <strong>2pk</strong></span></td>
+          <td class="num">8건</td>
+          <td class="num">₩681,232 <span style="color:#9ca3af;font-size:0.75rem">(×₩85,154)</span></td>
+          <td class="num" style="color:#6b7280">$32.98×8</td>
+          <td class="num" style="color:#6b7280">$4.80×8</td>
+          <td class="num">₩470,888</td>
+          <td class="num margin-positive">₩210,344</td>
+          <td><div class="rate-cell"><div class="rate-bar"><div class="rate-fill" style="width:30.9%;background:#8b5cf6"></div></div><div class="rate-text" style="color:#8b5cf6">30.9%</div></div></td>
+        </tr>
+        <tr>
+          <td><span class="badge b-smart">스마트</span> <span class="badge b-ydy" style="margin-left:4px">YDY</span> <span style="margin-left:6px">Magduo K2 <strong>3pk</strong></span></td>
+          <td class="num">1건</td>
+          <td class="num">₩73,109</td>
+          <td class="num" style="color:#6b7280">$9.99×3</td>
+          <td class="num" style="color:#6b7280">$4.80×1</td>
+          <td class="num">₩54,191</td>
+          <td class="num margin-positive">₩18,918</td>
+          <td><div class="rate-cell"><div class="rate-bar"><div class="rate-fill" style="width:25.9%;background:#8b5cf6"></div></div><div class="rate-text" style="color:#8b5cf6">25.9%</div></div></td>
+        </tr>
+        <tr class="total-row">
+          <td>합계</td>
+          <td class="num">15건</td>
+          <td class="num">₩1,342,888</td>
+          <td class="num" style="color:#6b7280">—</td>
+          <td class="num" style="color:#6b7280">—</td>
+          <td class="num">₩787,081</td>
+          <td class="num" style="color:#166534">₩555,807</td>
+          <td><div class="rate-cell"><div class="rate-bar"><div class="rate-fill" style="width:41.4%;background:#d97706"></div></div><div class="rate-text" style="color:#d97706;font-size:0.88rem">41.4%</div></div></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="two-col">
+    <div class="section">
+      <div class="section-title"><div class="icon-box" style="background:#dbeafe">🏪</div>채널별 실적</div>
+      <table>
+        <thead><tr><th>채널</th><th class="num">건수</th><th class="num">매출</th><th class="num">정산</th><th class="num">순마진</th></tr></thead>
+        <tbody>
+          <tr><td><span class="badge b-smart">스마트스토어</span></td><td class="num">14건</td><td class="num">₩1,372,400</td><td class="num">₩1,262,931</td><td class="num margin-positive">₩499,500</td></tr>
+          <tr><td><span class="badge b-coupang">쿠팡</span></td><td class="num">1건</td><td class="num">₩92,000</td><td class="num">₩79,957 <span style="color:#9ca3af;font-size:0.75rem">(-13.09%)</span></td><td class="num margin-positive">₩56,307</td></tr>
+          <tr><td><span class="badge b-11st">11번가</span></td><td class="num">—</td><td class="num" style="color:#9ca3af">주문 없음</td><td class="num" style="color:#9ca3af">—</td><td class="num" style="color:#9ca3af">—</td></tr>
+          <tr class="total-row"><td>합계</td><td class="num">15건</td><td class="num">₩1,464,400</td><td class="num">₩1,342,888</td><td class="num" style="color:#166534">₩555,807</td></tr>
+        </tbody>
       </table>
     </div>
-  </div>`;
-}
-
-// ── Section renderer (공통) ───────────────────────────────────────────────────
-function renderSection(data, brand, type, targetId) {
-  const sData = data.filter(o=>o.brand===brand && o.type===type);
-  const el = document.getElementById(targetId);
-  if(!sData.length){el.innerHTML="";return;}
-
-  const sq=sum(sData,"qty"),ss=sum(sData,"sales"),sc=sum(sData,"commission"),sset=sum(sData,"settlement"),scost=sum(sData,"cost_krw"),smar=sum(sData,"margin");
-  const smp=sset>0?smar/sset:0;
-  const isBlue=brand==="Mylabs";
-  const colorCls=type==="공구"?(isBlue?"blue":"purple"):(isBlue?"blue-light":"purple-light");
-  const titleCls=isBlue?"blue":"purple";
-  const emoji=type==="공구"?"💊":"🏪";
-  const label=`${brand} ${type}`;
-
-  // Mini flow
-  const miniFlow=`
-    <div class="mini-flow">
-      <span class="mf-chip">${sq}건</span>
-      <span class="mf-arrow">·</span>
-      <span class="mf-chip">매출 <span class="mv">${man(ss)}</span></span>
-      <span class="mf-arrow">−</span>
-      <span class="mf-chip orange">수수료 <span class="mv">▼${man(sc)}</span><span style="color:#9ca3af;font-size:10px"> (${ss>0?pct(sc/ss):"—"})</span></span>
-      <span class="mf-arrow">=</span>
-      <span class="mf-chip">정산 <span class="mv">${man(sset)}</span></span>
-      <span class="mf-arrow">−</span>
-      <span class="mf-chip red">원가 <span class="mv">▼${man(scost)}</span></span>
-      <span class="mf-arrow">=</span>
-      <span class="mf-chip green">순마진 <span class="mv">${fmt(smar)}</span></span>
-    </div>`;
-
-  let tableHtml="";
-  if(type==="공구"){
-    tableHtml = buildGongguTable(sData, brand);
-  } else {
-    tableHtml = buildSansiTable(sData);
-  }
-
-  el.innerHTML=`
-  <div class="sec-block">
-    <div class="sec-head ${colorCls}">
-      <div class="sh-top">
-        <span class="sh-title ${titleCls}">${emoji} ${label}</span>
-        <span><span class="sh-mar">${fmt(smar)}</span><span class="sh-pct">(${pct(smp)})</span></span>
-      </div>
-      ${miniFlow}
+    <div class="section">
+      <div class="section-title"><div class="icon-box" style="background:#fee2e2">📦</div>원가 기준표 (USD)</div>
+      <table>
+        <thead><tr><th>상품</th><th class="num">단위 원가</th><th>배송비</th></tr></thead>
+        <tbody>
+          <tr><td><span class="badge b-mylabs">Mylabs</span> Berberine Alpha</td><td class="num">$8.46 / 병</td><td style="color:#6b7280;font-size:0.8rem">$4.80 기본</td></tr>
+          <tr><td><span class="badge b-mylabs">Mylabs</span> VS Formula Prime</td><td class="num">$5.19 / 병</td><td style="color:#6b7280;font-size:0.8rem">$4.80 기본</td></tr>
+          <tr style="background:#faf5ff"><td><span class="badge b-ydy">YDY</span> Magduo K2</td><td class="num">$9.99 / 개</td><td style="color:#6b7280;font-size:0.8rem">$4.80 기본</td></tr>
+          <tr style="background:#faf5ff"><td><span class="badge b-ydy">YDY</span> NAD+ Tri Complex</td><td class="num">$17.99 / 개</td><td style="color:#6b7280;font-size:0.8rem">$4.80 기본</td></tr>
+          <tr style="background:#fffbeb"><td><span class="badge b-ydy">YDY</span> BQ10 CoQ10 <span class="badge b-new" style="margin-left:4px">NEW</span></td><td class="num">$16.49 / 병</td><td style="color:#6b7280;font-size:0.8rem">$4.80 기본</td></tr>
+        </tbody>
+      </table>
     </div>
-    ${tableHtml}
-  </div>`;
-}
+  </div>
 
-// ── 공구 테이블 (약사별 그룹) ─────────────────────────────────────────────────
-function buildGongguTable(sData, brand) {
-  const pharmacists=[...new Set(sData.map(o=>o.pharmacist||"미분류"))];
-  let html="";
-
-  for(const ph of pharmacists){
-    const phD=sData.filter(o=>(o.pharmacist||"미분류")===ph);
-    const phQ=sum(phD,"qty"),phS=sum(phD,"sales"),phC=sum(phD,"commission"),phSet=sum(phD,"settlement"),phCost=sum(phD,"cost_krw"),phM=sum(phD,"margin");
-    const phMp=phSet>0?phM/phSet:0;
-
-    // 상품별 행
-    const prods={};
-    phD.forEach(o=>{
-      if(!prods[o.label]) prods[o.label]={label:o.label,qty:0,sales:0,commission:0,settlement:0,cost_usd:o.cost_usd,cost_krw:0,margin:0};
-      prods[o.label].qty+=o.qty;prods[o.label].sales+=o.sales;prods[o.label].commission+=o.commission;
-      prods[o.label].settlement+=o.settlement;prods[o.label].cost_krw+=o.cost_krw;prods[o.label].margin+=o.margin;
-    });
-
-    let rows="";
-    for(const p of Object.values(prods)){
-      const puSet=p.settlement/p.qty,puCost=p.cost_usd*RATE,puMar=puSet-puCost,mp=puSet>0?puMar/puSet:0;
-      rows+=`<tr>
-        <td class="left">${p.label}</td>
-        <td>${p.qty}건</td>
-        <td class="orange">▼${man(p.commission)} <span class="gray" style="font-size:10px">(${pct(p.commission/p.sales)})</span></td>
-        <td>≈${fmt(puSet)}</td>
-        <td class="red">$${p.cost_usd} · ▼${fmt(puCost)}</td>
-        <td class="green bold">${fmt(p.margin)}</td>
-        <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:${Math.max(0,mp*100)}%;background:${bclr(mp)}"></div></div><span class="pv" style="color:${bclr(mp)}">${pct(mp)}</span></div></td>
-      </tr>`;
-    }
-    rows+=`<tr class="total-row">
-      <td class="left">소계</td><td>${phQ}건</td>
-      <td class="orange">▼${man(phC)}</td>
-      <td>${fmt(phSet)}</td>
-      <td class="red">▼${man(phCost)}</td>
-      <td class="green">${fmt(phM)}</td>
-      <td class="green">${pct(phMp)}</td>
-    </tr>`;
-
-    // warn
-    let warn="";
-    if(brand==="YDY"){
-      const diff=phD.reduce((s,o)=>s+(RATE-1504)*o.cost_usd*o.qty,0);
-      warn=`<div class="warn">⚠ 환율 ${RATE.toFixed(0)} 기준 마진율 ${pct(phMp)} — BQ10은 환율 민감${Math.abs(diff)>5000?` (기준 1,504 대비 ${fmt(Math.abs(diff))} ${diff>0?"감소":"증가"})`:""}.</div>`;
-    }
-
-    html+=`
-    <div class="ph-sub-head">
-      <span class="ph-label">💊 ${ph}</span>
-      <span style="font-size:11px;color:#6b7280;">${phQ}건 · 정산 ${man(phSet)} · 마진 <strong class="green">${man(phM)}</strong> (${pct(phMp)})</span>
+  <div class="section">
+    <div class="section-title"><div class="icon-box" style="background:#dcfce7">📈</div>상품별 마진율 비교</div>
+    <div class="bar-row"><div class="bar-label">VS Prime 2pk (쿠팡)</div><div class="bar-track"><div class="bar-fill" style="width:70.4%;background:linear-gradient(90deg,#3b82f6,#60a5fa)"><span>70.4%</span></div></div><div class="bar-pct" style="color:#3b82f6">₩56,307</div></div>
+    <div class="bar-row"><div class="bar-label">VS Prime 1pk (스마트)</div><div class="bar-track"><div class="bar-fill" style="width:63.8%;background:linear-gradient(90deg,#10b981,#34d399)"><span>63.8%</span></div></div><div class="bar-pct" style="color:#10b981">₩27,387</div></div>
+    <div class="bar-row"><div class="bar-label">Berberine Alpha 3pk</div><div class="bar-track"><div class="bar-fill" style="width:61.9%;background:linear-gradient(90deg,#10b981,#34d399)"><span>61.9%</span></div></div><div class="bar-pct" style="color:#10b981">₩76,509</div></div>
+    <div class="bar-row"><div class="bar-label">Berberine Alpha 1pk</div><div class="bar-track"><div class="bar-fill" style="width:54.8%;background:linear-gradient(90deg,#10b981,#34d399)"><span>54.8%</span></div></div><div class="bar-pct" style="color:#10b981">₩25,093</div></div>
+    <div class="bar-row"><div class="bar-label">YDY NAD+ 2pk</div><div class="bar-track"><div class="bar-fill" style="width:48.1%;background:linear-gradient(90deg,#f59e0b,#fbbf24)"><span>48.1%</span></div></div><div class="bar-pct" style="color:#f59e0b">₩58,874</div></div>
+    <div class="bar-row"><div class="bar-label">YDY NAD+ 3pk</div><div class="bar-track"><div class="bar-fill" style="width:47.4%;background:linear-gradient(90deg,#f59e0b,#fbbf24)"><span>47.4%</span></div></div><div class="bar-pct" style="color:#f59e0b">₩82,375</div></div>
+    <div class="bar-row"><div class="bar-label">YDY BQ10 2pk (×8) <span style="font-size:0.7rem;color:#92400e;background:#fef3c7;padding:1px 5px;border-radius:4px;margin-left:4px">NEW</span></div><div class="bar-track"><div class="bar-fill" style="width:30.9%;background:linear-gradient(90deg,#8b5cf6,#a78bfa)"><span>30.9%</span></div></div><div class="bar-pct" style="color:#8b5cf6">₩210,344</div></div>
+    <div class="bar-row"><div class="bar-label">YDY Magduo K2 3pk</div><div class="bar-track"><div class="bar-fill" style="width:25.9%;background:linear-gradient(90deg,#8b5cf6,#a78bfa)"><span>25.9%</span></div></div><div class="bar-pct" style="color:#8b5cf6">₩18,918</div></div>
+    <div style="margin-top:18px;padding:14px;background:#fafbff;border-radius:8px;font-size:0.82rem;color:#374151">
+      💡 <strong>인사이트:</strong> YDY BQ10 신규 출시로 8건(15건 중 53%) 점유. 단 마진율 30.9%로 전체 마진율을 60.9%(1주차)→41.4%로 하락. BQ10을 제외하면 순마진 ₩345,463 / 마진율 57.5%. 쿠팡 VS Prime 1건 정상 포함. VS Formula Prime · Berberine Alpha 라인은 여전히 60%+ 유지.
     </div>
-    <table>
-      <thead><tr>
-        <th class="left">상품</th><th>건수</th><th>수수료 (비율)</th>
-        <th>건당 정산</th><th>건당 원가</th><th>합계 마진</th><th>마진율</th>
-      </tr></thead>
-      <tbody>${rows}</tbody>
-    </table>
-    ${warn}`;
-  }
+  </div>
 
-  return `<div class="tbl-wrap ph">${html}</div>`;
-}
-
-// ── 상시 테이블 ───────────────────────────────────────────────────────────────
-function buildSansiTable(sData) {
-  const prods={};
-  sData.forEach(o=>{
-    const k=`${o.channel}__${o.label}`;
-    if(!prods[k]) prods[k]={channel:o.channel,label:o.label,qty:0,sales:0,commission:0,settlement:0,cost_krw:0,margin:0,cost_usd:o.cost_usd,comm_basis:o.comm_basis};
-    prods[k].qty+=o.qty;prods[k].sales+=o.sales;prods[k].commission+=o.commission;
-    prods[k].settlement+=o.settlement;prods[k].cost_krw+=o.cost_krw;prods[k].margin+=o.margin;
-    if(o.comm_basis==="est") prods[k].comm_basis="est"; // 하나라도 추정이면 표시
-  });
-
-  let rows="";
-  for(const p of Object.values(prods).sort((a,b)=>b.settlement-a.settlement)){
-    const mp=p.settlement>0?p.margin/p.settlement:0;
-    const estBadge=p.comm_basis==="est"?`<span class="est-badge">추정</span>`:"";
-    rows+=`<tr>
-      <td class="left"><span class="tag ${tagMap[p.channel]||""}">${p.channel}</span> ${p.label}</td>
-      <td>${p.qty}건</td>
-      <td class="orange">▼${man(p.commission)} <span class="gray" style="font-size:10px">(${pct(p.commission/p.sales)})</span>${estBadge}</td>
-      <td>${fmt(p.settlement)}</td>
-      <td class="red">$${p.cost_usd} · ▼${man(p.cost_krw)}</td>
-      <td class="green bold">${fmt(p.margin)}</td>
-      <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:${Math.max(0,mp*100)}%;background:${bclr(mp)}"></div></div><span class="pv" style="color:${bclr(mp)}">${pct(mp)}</span></div></td>
-    </tr>`;
-  }
-  const tot=Object.values(prods).reduce((s,p)=>({qty:s.qty+p.qty,commission:s.commission+p.commission,settlement:s.settlement+p.settlement,cost_krw:s.cost_krw+p.cost_krw,margin:s.margin+p.margin}),{qty:0,commission:0,settlement:0,cost_krw:0,margin:0});
-  rows+=`<tr class="total-row">
-    <td class="left">합계</td><td>${tot.qty}건</td>
-    <td class="orange">▼${man(tot.commission)}</td>
-    <td>${fmt(tot.settlement)}</td>
-    <td class="red">▼${man(tot.cost_krw)}</td>
-    <td class="green">${fmt(tot.margin)}</td>
-    <td class="green">${tot.settlement>0?pct(tot.margin/tot.settlement):"—"}</td>
-  </tr>`;
-
-  const hasEst=sData.some(o=>o.comm_basis==="est");
-  const note=hasEst?`<div class="comm-note">
-    📌 <strong>수수료 계산 기준</strong><br>
-    · 스마트스토어: 파일 실제값 (네이버페이 주문관리 수수료 + 매출연동 수수료)<br>
-    · 쿠팡 <span class="est-badge">추정</span>: 식품·건강 기본 8.8% + 결제수수료 2.9% + 부가세 10% = <strong>실질 약 12.9%</strong><br>
-    · 11번가 <span class="est-badge">추정</span>: 건강기능식품 카테고리 공식 수수료율 <strong>약 11%</strong>
-  </div>`:"";
-  return `${note}<div class="tbl-wrap">
-    <table>
-      <thead><tr>
-        <th class="left">채널 · 상품</th><th>건수</th><th>수수료 (비율)</th>
-        <th>정산</th><th>원가 (USD · 합계)</th><th>순마진</th><th>마진율</th>
-      </tr></thead>
-      <tbody>${rows}</tbody>
-    </table>
-  </div>`;
-}
-
-// ── Costs ─────────────────────────────────────────────────────────────────────
-function renderCosts(){
-  let h="";
-  for(const c of COST_TABLE){
-    const tag=c.brand==="Mylabs"?"tag-ml":"tag-ydy";
-    if(c.bq10){const c3=(c.unit*3+c.ship3)*RATE,c6=(c.unit*6+c.ship6)*RATE;h+=`<tr><td><span class="tag ${tag}">${c.brand}</span></td><td>${c.product}</td><td>$${c.unit}/개</td><td>$${c.ship3}(3개)/$${c.ship6}(6개)</td><td class="gray">—</td><td class="gray">—</td><td>3개:${fmt(c3)} / 6개:${fmt(c6)}</td></tr>`;}
-    else{const c1=(c.unit+c.ship)*RATE,c2=(c.unit*2+c.ship)*RATE,c3=(c.unit*3+c.ship)*RATE;h+=`<tr><td><span class="tag ${tag}">${c.brand}</span></td><td>${c.product}</td><td>$${c.unit}</td><td>$${c.ship}</td><td>${fmt(c1)}</td><td>${fmt(c2)}</td><td>${fmt(c3)}</td></tr>`;}
-  }
-  document.getElementById("cost-tbody").innerHTML=h;
-}
-
-// ── Tab switch ────────────────────────────────────────────────────────────────
-function switchTab(name){
-  ["total","mylabs","ydy","costs"].forEach((n,i)=>{
-    document.querySelectorAll(".tab")[i].classList.toggle("active",n===name);
-    document.getElementById("tab-"+n).classList.toggle("active",n===name);
-  });
-}
-
-// ── Init ──────────────────────────────────────────────────────────────────────
-renderPills(); renderAll(); fetchRate();
-</script>
+  <div class="footnote">생성일: 2026-06-12 · 환율 1,558 KRW/USD (실시간) · 쿠팡 수수료 13.09% 추정 적용 (건강식품 9% + 결제 2.9% + 부가세 10%) · 스마트스토어 파일 정산액 기준 · Google Drive 파일 2개 (주차 미완료 — 06/11~06/13 데이터)</div>
+</div>
 </body>
 </html>
