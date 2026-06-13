@@ -195,7 +195,6 @@ tr:hover td{background:#fafafa;}
     <div class="tab" onclick="switchTab('mylabs')">🔵 Mylabs</div>
     <div class="tab" onclick="switchTab('ydy')">🟣 YDY</div>
     <div class="tab" onclick="switchTab('costs')">💰 원가표</div>
-    <div class="tab" onclick="switchTab('annual')">📅 1~5월 누적</div>
   </div>
 
   <!-- 전체 요약 -->
@@ -230,10 +229,6 @@ tr:hover td{background:#fafafa;}
     </div>
   </div>
 
-  <!-- 1~5월 누적 -->
-  <div class="tab-body" id="tab-annual">
-    <div id="annual-body"></div>
-  </div>
 </div>
 </div>
 
@@ -451,7 +446,6 @@ function renderAll(){
   renderSection(data,"YDY","상시","ydy-sansi");
 
   renderCosts();
-  renderAnnual();
   document.getElementById("footer").textContent=`${new Date().toLocaleString("ko-KR")} 기준 · 환율 ${rateSrc} · ${allPeriods().length}개 기간`;
 }
 
@@ -460,19 +454,22 @@ function renderChannelSummary(data) {
   const ch = {};
   const ORDER = ["스마트스토어","쿠팡","11번가"];
   data.forEach(o => {
-    if(!ch[o.channel]) ch[o.channel]={qty:0,sales:0,commission:0,settlement:0,cost:0,margin:0,hasEst:false};
+    if(!ch[o.channel]) ch[o.channel]={qty:0,sales:0,commission:0,settlement:0,cost:0,prod:0,ship:0,pharm:0,margin:0,hasEst:false};
     ch[o.channel].qty        += o.qty;
     ch[o.channel].sales      += o.sales;
     ch[o.channel].commission += o.commission;
     ch[o.channel].settlement += o.settlement;
     ch[o.channel].cost       += o.cost_krw;
+    ch[o.channel].prod       += o.prod_krw;
+    ch[o.channel].ship       += o.ship_krw;
+    ch[o.channel].pharm      += o.pharm_krw;
     ch[o.channel].margin     += o.margin;
     if(o.comm_basis==="est") ch[o.channel].hasEst=true;
   });
 
   const channels = ORDER.filter(c=>ch[c]).concat(Object.keys(ch).filter(c=>!ORDER.includes(c)));
   let rows="";
-  let tot={qty:0,sales:0,commission:0,settlement:0,cost:0,margin:0};
+  let tot={qty:0,sales:0,commission:0,settlement:0,cost:0,prod:0,ship:0,pharm:0,margin:0};
 
   for(const c of channels){
     const v=ch[c];
@@ -485,12 +482,14 @@ function renderChannelSummary(data) {
       <td>${fmt(v.sales)}</td>
       <td class="orange">▼${fmt(v.commission)} <span class="gray" style="font-size:10px">(${pct(cp)})</span>${estBadge}</td>
       <td>${fmt(v.settlement)}</td>
-      <td class="red">▼${fmt(v.cost)}</td>
+      <td class="red">▼${fmt(v.prod)}</td>
+      <td class="red">▼${fmt(v.ship)}</td>
+      <td style="color:#7c3aed">${v.pharm>0?"▼"+fmt(v.pharm):"—"}</td>
       <td class="green bold">${fmt(v.margin)}</td>
       <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:${Math.max(0,mp*100)}%;background:${bclr(mp)}"></div></div><span class="pv" style="color:${bclr(mp)}">${pct(mp)}</span></div></td>
     </tr>`;
     tot.qty+=v.qty; tot.sales+=v.sales; tot.commission+=v.commission;
-    tot.settlement+=v.settlement; tot.cost+=v.cost; tot.margin+=v.margin;
+    tot.settlement+=v.settlement; tot.cost+=v.cost; tot.prod+=v.prod; tot.ship+=v.ship; tot.pharm+=v.pharm; tot.margin+=v.margin;
   }
   const totp=tot.settlement>0?tot.margin/tot.settlement:0;
   const totcp=tot.sales>0?tot.commission/tot.sales:0;
@@ -500,7 +499,9 @@ function renderChannelSummary(data) {
     <td>${fmt(tot.sales)}</td>
     <td class="orange">▼${fmt(tot.commission)} <span class="gray" style="font-size:10px">(${pct(totcp)})</span></td>
     <td>${fmt(tot.settlement)}</td>
-    <td class="red">▼${fmt(tot.cost)}</td>
+    <td class="red">▼${fmt(tot.prod)}</td>
+    <td class="red">▼${fmt(tot.ship)}</td>
+    <td style="color:#7c3aed">${tot.pharm>0?"▼"+fmt(tot.pharm):"—"}</td>
     <td class="green">${fmt(tot.margin)}</td>
     <td class="green">${pct(totp)}</td>
   </tr>`;
@@ -521,7 +522,9 @@ function renderChannelSummary(data) {
           <th>매출</th>
           <th>수수료 (비율)</th>
           <th>정산금액</th>
-          <th>원가+배송</th>
+          <th>원가</th>
+          <th>배송비</th>
+          <th>약사수수료</th>
           <th>순마진</th>
           <th>마진율</th>
         </tr></thead>
@@ -537,7 +540,7 @@ function renderSection(data, brand, type, targetId) {
   const el = document.getElementById(targetId);
   if(!sData.length){el.innerHTML="";return;}
 
-  const sq=sum(sData,"qty"),ss=sum(sData,"sales"),sc=sum(sData,"commission"),sset=sum(sData,"settlement"),scost=sum(sData,"cost_krw"),smar=sum(sData,"margin");
+  const sq=sum(sData,"qty"),ss=sum(sData,"sales"),sc=sum(sData,"commission"),sset=sum(sData,"settlement"),scost=sum(sData,"cost_krw"),smar=sum(sData,"margin"),sprod=sum(sData,"prod_krw"),sship=sum(sData,"ship_krw"),spharm=sum(sData,"pharm_krw");
   const smp=sset>0?smar/sset:0;
   const isBlue=brand==="Mylabs";
   const colorCls=type==="공구"?(isBlue?"blue":"purple"):(isBlue?"blue-light":"purple-light");
@@ -556,7 +559,10 @@ function renderSection(data, brand, type, targetId) {
       <span class="mf-arrow">=</span>
       <span class="mf-chip">정산 <span class="mv">${man(sset)}</span></span>
       <span class="mf-arrow">−</span>
-      <span class="mf-chip red">원가 <span class="mv">▼${man(scost)}</span></span>
+      <span class="mf-chip red">원가 <span class="mv">▼${man(sprod)}</span></span>
+      <span class="mf-arrow">−</span>
+      <span class="mf-chip red">배송 <span class="mv">▼${man(sship)}</span></span>
+      ${spharm>0?`<span class="mf-arrow">−</span><span class="mf-chip" style="color:#7c3aed">약사수수료 <span class="mv">▼${man(spharm)}</span></span>`:""}
       <span class="mf-arrow">=</span>
       <span class="mf-chip green">순마진 <span class="mv">${fmt(smar)}</span></span>
     </div>`;
@@ -711,59 +717,9 @@ function renderCosts(){
 }
 
 
-// ── 1~5월 누적 (채널 정산 데이터 기반) ─────────────────────────────────────────
-// 약사수수료: Mylabs 공구만 (최초 상품별 총 주문금액×35%). YDY 공구는 도매원가에 포함.
-// 쿠팡: 원본에 날짜 없어 월분리 불가 → 1~5월 총계만, 순마진 미반영.
-const ANNUAL_DATA = {"months": [{"ym": "2026-01", "channels": {"스마트스토어": {"sales": 108588600, "settle": 101413838, "qty": 811, "cnt": 806, "cost_usd": 44991.7, "ph_my": 17990770, "ph_ydy": 18788700}, "11번가": {"sales": 552000, "settle": 412000, "qty": 4, "cnt": 4, "cost_usd": 81.5, "ph_my": 0, "ph_ydy": 0}}}, {"ym": "2026-02", "channels": {"스마트스토어": {"sales": 161330400, "settle": 150672720, "qty": 1190, "cnt": 1186, "cost_usd": 89377.8, "ph_my": 38150, "ph_ydy": 55636385}, "11번가": {"sales": 966000, "settle": 748780, "qty": 9, "cnt": 8, "cost_usd": 152.2, "ph_my": 0, "ph_ydy": 0}}}, {"ym": "2026-03", "channels": {"스마트스토어": {"sales": 69603700, "settle": 65413332, "qty": 548, "cnt": 545, "cost_usd": 24967.5, "ph_my": 14391650, "ph_ydy": 7803600}, "11번가": {"sales": 1288000, "settle": 994104, "qty": 10, "cnt": 8, "cost_usd": 193.3, "ph_my": 0, "ph_ydy": 0}}}, {"ym": "2026-04", "channels": {"스마트스토어": {"sales": 308208150, "settle": 292902020, "qty": 2188, "cnt": 2178, "cost_usd": 134409.1, "ph_my": 39606318, "ph_ydy": 65881179}, "11번가": {"sales": 598000, "settle": 466514, "qty": 5, "cnt": 5, "cost_usd": 91.5, "ph_my": 0, "ph_ydy": 0}}}, {"ym": "2026-05", "channels": {"스마트스토어": {"sales": 418089400, "settle": 397882275, "qty": 2702, "cnt": 2681, "cost_usd": 151660.3, "ph_my": 110595870, "ph_ydy": 31927805}, "11번가": {"sales": 1012000, "settle": 771614, "qty": 8, "cnt": 8, "cost_usd": 152.6, "ph_my": 0, "ph_ydy": 0}}}], "coupang": {"sales": 12935100.0, "units": 148, "cost_usd": 2183.8500000000004, "missing": 1}};
-function renderAnnual(){
-  const won=n=>"₩"+Math.round(n).toLocaleString("ko-KR");
-  const manA=n=>"₩"+Math.round(n/10000).toLocaleString("ko-KR")+"만";
-  const eok=n=>(n/100000000).toFixed(2)+"억";
-  const pctA=n=>(n*100).toFixed(1)+"%";
-  const cls=v=>v>=0?'style="color:#059669;font-weight:700"':'style="color:#dc2626;font-weight:700"';
-  let T={sales:0,settle:0,qty:0,cnt:0,cost:0,plat:0,ph:0,margin:0};
-  let rows="";
-  ANNUAL_DATA.months.forEach(m=>{
-    let s=0,se=0,q=0,cn=0,cu=0,ph=0;
-    for(const k in m.channels){const c=m.channels[k];
-      s+=c.sales;se+=c.settle;q+=c.qty;cn+=c.cnt;cu+=c.cost_usd;ph+=(c.ph_my||0);}
-    const cost=cu*RATE, plat=s-se, mar=se-cost-ph, mp=s>0?mar/s:0;
-    T.sales+=s;T.settle+=se;T.qty+=q;T.cnt+=cn;T.cost+=cost;T.plat+=plat;T.ph+=ph;T.margin+=mar;
-    rows+=`<tr><td class="left">${m.ym}</td><td>${cn}</td><td>${q.toLocaleString()}</td>
-      <td>${won(s)}</td><td class="gray">${won(plat)}</td><td>${won(se)}</td>
-      <td style="color:#d97706">${ph?won(ph):'—'}</td><td class="gray">${won(cost)}</td>
-      <td ${cls(mar)}>${won(mar)}</td><td ${cls(mar)}>${pctA(mp)}</td></tr>`;
-  });
-  const tmp=T.sales>0?T.margin/T.sales:0;
-  const cp=ANNUAL_DATA.coupang, cpCost=cp.cost_usd*RATE;
-  const flow=`<div class="flow-strip" style="border:1px solid #e5e7eb;border-radius:10px;margin-bottom:12px;">
-    <div class="flow-item"><div class="fl">총 매출</div><div class="fv">${eok(T.sales+cp.sales)}</div><div class="fs">스토어+11번가+쿠팡</div></div>
-    <div class="flow-item orange"><div class="fl">플랫폼 수수료</div><div class="fv">${manA(T.plat)}</div><div class="fs">${pctA(T.plat/T.sales)}</div></div>
-    <div class="flow-item"><div class="fl">정산액</div><div class="fv">${eok(T.settle)}</div><div class="fs">스토어+11번가</div></div>
-    <div class="flow-item" style="--x"><div class="fl">약사 수수료</div><div class="fv" style="color:#7c3aed">${manA(T.ph)}</div><div class="fs">Mylabs 공구</div></div>
-    <div class="flow-item red"><div class="fl">원가</div><div class="fv">${manA(T.cost)}</div><div class="fs">@${RATE.toFixed(0)}</div></div>
-    <div class="flow-item green"><div class="fl">순마진</div><div class="fv">${manA(T.margin)}</div><div class="fs">마진율 ${pctA(tmp)}</div></div>
-  </div>`;
-  const note=`<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:9px 11px;font-size:11px;color:#92400e;line-height:1.6;margin-bottom:12px;">
-    <strong>적용 기준</strong> · 약사 수수료 = <strong>Mylabs 공구</strong> 최초 상품별 총 주문금액×35% (YDY 공구는 도매원가 포함, 미적용) ·
-    쿠팡은 날짜 없어 1~5월 총계만(아래), 순마진 미반영 · 원가에 Berberine MS $5.23 반영 · 6월 이후·주차별 상세는 [전체 요약] 탭</div>`;
-  const table=`<div class="tbl-wrap"><table>
-    <thead><tr><th class="left">월</th><th>건수</th><th>수량</th><th>매출</th><th>플랫폼수수료</th><th>정산</th><th>약사수수료</th><th>원가</th><th>순마진</th><th>마진율</th></tr></thead>
-    <tbody>${rows}</tbody>
-    <tfoot><tr style="font-weight:800;background:#f8faff;border-top:2px solid #1e2d5a;">
-      <td class="left">합계</td><td>${T.cnt}</td><td>${T.qty.toLocaleString()}</td><td>${won(T.sales)}</td>
-      <td>${won(T.plat)}</td><td>${won(T.settle)}</td><td>${won(T.ph)}</td><td>${won(T.cost)}</td>
-      <td ${cls(T.margin)}>${won(T.margin)}</td><td>${pctA(tmp)}</td></tr></tfoot>
-  </table></div>`;
-  const cpcard=`<div style="margin-top:12px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:10px 12px;font-size:12px;">
-    <strong style="color:#0369a1">🟦 쿠팡 (1~5월 총계)</strong> · 매출 <strong>${manA(cp.sales)}</strong> · 판매 ${cp.units}개 · 원가 ${manA(cpCost)}
-    <span style="color:#9ca3af"> — 날짜 데이터 없어 월 분리·정산 미산출</span></div>`;
-  document.getElementById("annual-body").innerHTML=note+flow+table+cpcard;
-}
-
 // ── Tab switch ────────────────────────────────────────────────────────────────
 function switchTab(name){
-  ["total","mylabs","ydy","costs","annual"].forEach((n,i)=>{
+  ["total","mylabs","ydy","costs"].forEach((n,i)=>{
     document.querySelectorAll(".tab")[i].classList.toggle("active",n===name);
     document.getElementById("tab-"+n).classList.toggle("active",n===name);
   });
