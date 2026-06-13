@@ -222,6 +222,17 @@ tr:hover td{background:#fafafa;}
 // 11번가: 건강기능식품 약 11% (Lavita는 판매자할인+서비스료 실제값)
 const PERIODS_DATA = [
   {
+    id:"2026-1to5", label:"2026년 1월~5월 3주차",
+    orders:[
+      {label:"1~5월 누적 (스마트스토어)", channel:"스마트스토어", brand:"Mylabs", type:"공구", comm_basis:"actual", qty:3701, settlement:495518715, sales:521779310, cost_usd:41.1661, ph_krw:182622758},
+      {label:"1~5월 누적 (스마트스토어)", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", qty:3433, settlement:485005441, sales:514393340, cost_usd:82.8595},
+      {label:"1~5월 누적 (스마트스토어)", channel:"스마트스토어", brand:"Mylabs", type:"상시", comm_basis:"actual", qty:208, settlement:18837662, sales:20121400, cost_usd:21.3847},
+      {label:"1~5월 누적 (쿠팡)", channel:"쿠팡", brand:"Mylabs", type:"상시", comm_basis:"est", qty:148, settlement:11266472, sales:12935100, cost_usd:14.7557},
+      {label:"1~5월 누적 (스마트스토어)", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", qty:97, settlement:8922367, sales:9526200, cost_usd:42.7403},
+      {label:"1~5월 누적 (11번가)", channel:"11번가", brand:"Mylabs", type:"상시", comm_basis:"actual", qty:36, settlement:3393012, sales:4416000, cost_usd:18.64},
+    ]
+  },
+  {
     id:"2026-05-w4", label:"2026년 5월 4주차",
     orders:[
       {label:"Berberine Alpha 3pk",  channel:"스마트스토어",brand:"Mylabs",type:"상시",comm_basis:"actual", qty:10,settlement:1235290,sales:1323000,cost_usd:30.18},
@@ -293,7 +304,7 @@ function loadExtra(){try{return JSON.parse(localStorage.getItem(LS))||[];}catch{
 function allOrders(){return[...PERIODS_DATA.flatMap(p=>p.orders.map(o=>({...o,period:p.id}))),...loadExtra().flatMap(p=>p.orders.map(o=>({...o,period:p.id})))];}
 function allPeriods(){return[...PERIODS_DATA,...loadExtra()];}
 function filtered(){const a=allOrders();return selPeriod==="all"?a:a.filter(o=>o.period===selPeriod);}
-function calc(arr){return arr.map(o=>({...o,cost_krw:o.cost_usd*RATE*o.qty,commission:o.sales-o.settlement,margin:o.settlement-o.cost_usd*RATE*o.qty}));}
+function calc(arr){return arr.map(o=>{const ph=o.ph_krw||0;const ck=o.cost_usd*RATE*o.qty+ph;return {...o,cost_krw:ck,commission:o.sales-o.settlement,margin:o.settlement-ck};});}
 
 // ── Utils ─────────────────────────────────────────────────────────────────────
 const fmt =n=>"₩"+Math.round(n).toLocaleString("ko-KR");
