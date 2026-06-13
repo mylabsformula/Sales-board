@@ -113,6 +113,7 @@ tr:hover td{background:#fafafa;}
 .warn{background:#fef3c7;border-left:3px solid #fcd34d;padding:6px 10px;font-size:11px;color:#92400e;margin-top:0;}
 
 .cost-scroll{overflow-x:auto;}
+.tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch;}
 .est-badge{display:inline-block;font-size:9px;font-weight:700;background:#fef3c7;color:#92400e;border-radius:3px;padding:0 4px;margin-left:3px;vertical-align:middle;}
 .comm-note{background:#fffbeb;border:1px solid #fde68a;border-radius:7px;padding:8px 12px;font-size:11px;color:#78350f;margin-bottom:12px;line-height:1.6;}
 .footer{text-align:center;font-size:10px;color:#d1d5db;padding:10px;}
@@ -131,7 +132,7 @@ tr:hover td{background:#fafafa;}
   .tab{padding:9px 11px;font-size:12px;}
   /* 표 가로 스크롤: 좁은 화면에서 칸이 뭉개지지 않게 최소폭 + 밀어서 보기 */
   .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
-  .tbl-wrap table{min-width:640px;}
+  .tbl-wrap table, .tscroll table{min-width:640px;}
   .cost-scroll table{min-width:560px;}
 }
 @media (max-width:380px){
@@ -610,17 +611,17 @@ function buildGongguTable(sData, brand) {
       <span class="ph-label">💊 ${ph}</span>
       <span style="font-size:11px;color:#6b7280;">${phQ}건 · 정산 ${man(phSet)} · 마진 <strong class="green">${man(phM)}</strong> (${pct(phMp)})</span>
     </div>
-    <table>
+    <div class="tscroll"><table>
       <thead><tr>
         <th class="left">상품</th><th>건수</th><th>수수료 (비율)</th>
         <th>건당 정산</th><th>건당 원가</th><th>합계 마진</th><th>마진율</th>
       </tr></thead>
       <tbody>${rows}</tbody>
-    </table>
+    </table></div>
     ${warn}`;
   }
 
-  return `<div class="tbl-wrap ph">${html}</div>`;
+  return `<div class="tbl-wrap ph" style="overflow:visible">${html}</div>`;
 }
 
 // ── 상시 테이블 ───────────────────────────────────────────────────────────────
