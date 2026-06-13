@@ -139,7 +139,9 @@ tr:hover td{background:#fafafa;}
   <div class="flow-item"><div class="fl">총 매출</div><div class="fv" id="f-sales">—</div><div class="fs">전체</div></div>
   <div class="flow-item orange"><div class="fl">수수료</div><div class="fv" id="f-comm">—</div><div class="fs" id="f-comm-pct">—</div></div>
   <div class="flow-item"><div class="fl">정산 예정액</div><div class="fv" id="f-set">—</div><div class="fs">차감 후</div></div>
-  <div class="flow-item red"><div class="fl">원가+배송</div><div class="fv" id="f-cost">—</div><div class="fs" id="f-rate">@환율</div></div>
+  <div class="flow-item red"><div class="fl">원가</div><div class="fv" id="f-cost">—</div><div class="fs" id="f-rate">@환율</div></div>
+  <div class="flow-item red"><div class="fl">배송비</div><div class="fv" id="f-ship">—</div><div class="fs">국제배송</div></div>
+  <div class="flow-item" style="background:#faf5ff"><div class="fl">약사수수료</div><div class="fv" id="f-pharm" style="color:#7c3aed">—</div><div class="fs">Mylabs 공구</div></div>
   <div class="flow-item green"><div class="fl">순마진</div><div class="fv" id="f-margin">—</div><div class="fs" id="f-mpct">—</div></div>
 </div>
 
@@ -224,79 +226,75 @@ const PERIODS_DATA = [
   {
     id:"2026-1to5", label:"2026년 1월~5월 3주차",
     orders:[
-      {label:"1~5월 고약사", channel:"스마트스토어", brand:"Mylabs", type:"공구", comm_basis:"actual", pharmacist:"고약사", qty:2126, settlement:300944885, sales:315988200, cost_usd:46.4532, ph_krw:110595870},
-      {label:"1~5월 약사임당", channel:"스마트스토어", brand:"Mylabs", type:"공구", comm_basis:"actual", pharmacist:"약사임당", qty:546, settlement:70146367, sales:74144000, cost_usd:42.0048, ph_krw:25950400},
-      {label:"1~5월 하유약사", channel:"스마트스토어", brand:"Mylabs", type:"공구", comm_basis:"actual", pharmacist:"하유약사", qty:387, settlement:52386434, sales:55399710, cost_usd:42.9912, ph_krw:19389898},
-      {label:"1~5월 드림약사", channel:"스마트스토어", brand:"Mylabs", type:"공구", comm_basis:"actual", pharmacist:"드림약사", qty:431, settlement:44538398, sales:46799000, cost_usd:24.6385, ph_krw:16379650},
-      {label:"1~5월 봄약사", channel:"스마트스토어", brand:"Mylabs", type:"공구", comm_basis:"actual", pharmacist:"봄약사", qty:211, settlement:27502631, sales:29448400, cost_usd:40.6155, ph_krw:10306940},
-      {label:"1~5월 누적 (스마트스토어)", channel:"스마트스토어", brand:"Mylabs", type:"상시", comm_basis:"actual", qty:208, settlement:18837662, sales:20121400, cost_usd:21.3847},
-      {label:"1~5월 고약사", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"고약사", qty:1224, settlement:179229537, sales:188331920, cost_usd:83.3803},
-      {label:"1~5월 릴리약사", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"릴리약사", qty:914, settlement:116488640, sales:124740100, cost_usd:77.6119},
-      {label:"1~5월 몸짱제니약사", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"몸짱제니약사", qty:582, settlement:76125684, sales:81445000, cost_usd:79.755},
-      {label:"1~5월 약들약", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"약들약", qty:295, settlement:56596233, sales:59395300, cost_usd:117.0661},
-      {label:"1~5월 형제약사", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"형제약사", qty:196, settlement:25657729, sales:27435000, cost_usd:77.9759},
-      {label:"1~5월 몸짱약사", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"몸짱약사", qty:153, settlement:22448284, sales:23986020, cost_usd:83.1595},
-      {label:"1~5월 쀼약사", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"쀼약사", qty:69, settlement:8459334, sales:9060000, cost_usd:74.4322},
-      {label:"1~5월 누적 (스마트스토어)", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", qty:97, settlement:8922367, sales:9526200, cost_usd:42.7403},
-      {label:"1~5월 누적 (쿠팡)", channel:"쿠팡", brand:"Mylabs", type:"상시", comm_basis:"est", qty:148, settlement:11266472, sales:12935100, cost_usd:14.7557},
-      {label:"1~5월 누적 (11번가)", channel:"11번가", brand:"Mylabs", type:"상시", comm_basis:"actual", qty:36, settlement:3393012, sales:4416000, cost_usd:18.64},
+      {label:"1~5월 고약사", channel:"스마트스토어", brand:"Mylabs", type:"공구", comm_basis:"actual", pharmacist:"고약사", qty:2126, settlement:300944885, sales:315988200, cost_usd:46.4532, ship_usd:7.8221, ph_krw:110595870},
+      {label:"1~5월 약사임당", channel:"스마트스토어", brand:"Mylabs", type:"공구", comm_basis:"actual", pharmacist:"약사임당", qty:546, settlement:70146367, sales:74144000, cost_usd:42.0048, ship_usd:7.6535, ph_krw:25950400},
+      {label:"1~5월 하유약사", channel:"스마트스토어", brand:"Mylabs", type:"공구", comm_basis:"actual", pharmacist:"하유약사", qty:387, settlement:52386434, sales:55399710, cost_usd:42.9912, ship_usd:7.7858, ph_krw:19389898},
+      {label:"1~5월 드림약사", channel:"스마트스토어", brand:"Mylabs", type:"공구", comm_basis:"actual", pharmacist:"드림약사", qty:431, settlement:44538398, sales:46799000, cost_usd:24.6385, ship_usd:7.4067, ph_krw:16379650},
+      {label:"1~5월 봄약사", channel:"스마트스토어", brand:"Mylabs", type:"공구", comm_basis:"actual", pharmacist:"봄약사", qty:211, settlement:27502631, sales:29448400, cost_usd:40.6155, ship_usd:7.7645, ph_krw:10306940},
+      {label:"1~5월 누적 (스마트스토어)", channel:"스마트스토어", brand:"Mylabs", type:"상시", comm_basis:"actual", qty:208, settlement:18837662, sales:20121400, cost_usd:21.3847, ship_usd:4.8},
+      {label:"1~5월 고약사", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"고약사", qty:1224, settlement:179229537, sales:188331920, cost_usd:83.3803, ship_usd:7.7763},
+      {label:"1~5월 릴리약사", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"릴리약사", qty:914, settlement:116488640, sales:124740100, cost_usd:77.6119, ship_usd:7.7562},
+      {label:"1~5월 몸짱제니약사", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"몸짱제니약사", qty:582, settlement:76125684, sales:81445000, cost_usd:79.755, ship_usd:7.8},
+      {label:"1~5월 약들약", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"약들약", qty:295, settlement:56596233, sales:59395300, cost_usd:117.0661, ship_usd:7.8831},
+      {label:"1~5월 형제약사", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"형제약사", qty:196, settlement:25657729, sales:27435000, cost_usd:77.9759, ship_usd:7.749},
+      {label:"1~5월 몸짱약사", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"몸짱약사", qty:153, settlement:22448284, sales:23986020, cost_usd:83.1595, ship_usd:7.8229},
+      {label:"1~5월 쀼약사", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"쀼약사", qty:69, settlement:8459334, sales:9060000, cost_usd:74.4322, ship_usd:7.6913},
+      {label:"1~5월 누적 (스마트스토어)", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", qty:97, settlement:8922367, sales:9526200, cost_usd:42.7403, ship_usd:6.0371},
+      {label:"1~5월 누적 (쿠팡)", channel:"쿠팡", brand:"Mylabs", type:"상시", comm_basis:"est", qty:148, settlement:11266472, sales:12935100, cost_usd:14.7557, ship_usd:4.2486},
+      {label:"1~5월 누적 (11번가)", channel:"11번가", brand:"Mylabs", type:"상시", comm_basis:"actual", qty:36, settlement:3393012, sales:4416000, cost_usd:18.64, ship_usd:4.8}
     ]
   },
   {
     id:"2026-05-w4", label:"2026년 5월 4주차",
     orders:[
-      {label:"Berberine Alpha 3pk",  channel:"스마트스토어",brand:"Mylabs",type:"상시",comm_basis:"actual", qty:10,settlement:1235290,sales:1323000,cost_usd:30.18},
-      {label:"Berberine Alpha 1pk",  channel:"스마트스토어",brand:"Mylabs",type:"상시",comm_basis:"actual", qty:1, settlement:45752,  sales:49000,  cost_usd:13.26},
-      {label:"VS Formula Prime 3pk", channel:"스마트스토어",brand:"Mylabs",type:"상시",comm_basis:"actual", qty:3, settlement:351940, sales:376928, cost_usd:20.37},
-      {label:"VS Formula Prime 2pk", channel:"쿠팡",        brand:"Mylabs",type:"상시",comm_basis:"actual", qty:2, settlement:184000, sales:184000, cost_usd:15.18},
-      {label:"VS Formula Prime 1pk", channel:"스마트스토어",brand:"Mylabs",type:"상시",comm_basis:"actual", qty:5, settlement:221705, sales:237446, cost_usd:9.99},
-      {label:"VS Formula Prime 1pk", channel:"11번가",      brand:"Mylabs",type:"상시",comm_basis:"actual", qty:1, settlement:47484,  sales:46000,  cost_usd:9.99},
-      {label:"VS Formula Prime 1pk", channel:"스마트스토어",brand:"Mylabs",type:"공구",comm_basis:"actual", pharmacist:"형제약사",qty:1,settlement:42951,sales:46000,cost_usd:9.99},
-      {label:"BQ10 CoQ10 3개묶음",   channel:"스마트스토어",brand:"YDY",  type:"공구",comm_basis:"actual", pharmacist:"형제약사",qty:44,settlement:4443428,sales:4752000,cost_usd:56.77},
-      {label:"BQ10 CoQ10 6개묶음",   channel:"스마트스토어",brand:"YDY",  type:"공구",comm_basis:"actual", pharmacist:"형제약사",qty:35,settlement:6494320,sales:7560000,cost_usd:107.24},
-      {label:"Circu Pycnogenol 1pk", channel:"스마트스토어",brand:"YDY",  type:"상시",comm_basis:"actual", qty:1, settlement:133053, sales:142500, cost_usd:27.79},
-      {label:"Magduo K2 1pk",        channel:"스마트스토어",brand:"YDY",  type:"상시",comm_basis:"actual", qty:1, settlement:51447,  sales:55000,  cost_usd:14.79},
+      {label:"Berberine Alpha 3pk", channel:"스마트스토어", brand:"Mylabs", type:"상시", comm_basis:"actual", qty:10, settlement:1235290, sales:1323000, cost_usd:30.18, ship_usd:4.8},
+      {label:"Berberine Alpha 1pk", channel:"스마트스토어", brand:"Mylabs", type:"상시", comm_basis:"actual", qty:1, settlement:45752, sales:49000, cost_usd:13.26, ship_usd:4.8},
+      {label:"VS Formula Prime 3pk", channel:"스마트스토어", brand:"Mylabs", type:"상시", comm_basis:"actual", qty:3, settlement:351940, sales:376928, cost_usd:20.37, ship_usd:4.8},
+      {label:"VS Formula Prime 2pk", channel:"쿠팡", brand:"Mylabs", type:"상시", comm_basis:"actual", qty:2, settlement:184000, sales:184000, cost_usd:15.18, ship_usd:4.8},
+      {label:"VS Formula Prime 1pk", channel:"스마트스토어", brand:"Mylabs", type:"상시", comm_basis:"actual", qty:5, settlement:221705, sales:237446, cost_usd:9.99, ship_usd:4.8},
+      {label:"VS Formula Prime 1pk", channel:"11번가", brand:"Mylabs", type:"상시", comm_basis:"actual", qty:1, settlement:47484, sales:46000, cost_usd:9.99, ship_usd:4.8},
+      {label:"VS Formula Prime 1pk", channel:"스마트스토어", brand:"Mylabs", type:"공구", comm_basis:"actual", pharmacist:"형제약사", qty:1, settlement:42951, sales:46000, cost_usd:9.99, ship_usd:4.8},
+      {label:"BQ10 CoQ10 3개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"형제약사", qty:44, settlement:4443428, sales:4752000, cost_usd:56.77, ship_usd:7.3},
+      {label:"BQ10 CoQ10 6개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"형제약사", qty:35, settlement:6494320, sales:7560000, cost_usd:107.24, ship_usd:8.3},
+      {label:"Circu Pycnogenol 1pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", qty:1, settlement:133053, sales:142500, cost_usd:27.79, ship_usd:4.8},
+      {label:"Magduo K2 1pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", qty:1, settlement:51447, sales:55000, cost_usd:14.79, ship_usd:4.8}
     ]
   },
   {
     id:"2026-06-w1", label:"2026년 6월 1주차",
     orders:[
-      // Mylabs 공구 - 봄약사
-      {label:"Berberine Alpha 6pk(공구)", channel:"스마트스토어",brand:"Mylabs",type:"공구",comm_basis:"actual", pharmacist:"봄약사",qty:1,settlement:172735,sales:185000,cost_usd:59.06},
-      // Mylabs 상시
-      {label:"VS Formula Prime 2pk", channel:"쿠팡",        brand:"Mylabs",type:"상시",comm_basis:"actual", qty:3, settlement:239872, sales:276000, cost_usd:15.18},
-      {label:"VS Formula Prime 3pk", channel:"쿠팡 Lavita", brand:"Mylabs",type:"상시",comm_basis:"actual", qty:2, settlement:215904, sales:248400, cost_usd:20.37},
-      {label:"VS Formula Prime 3pk", channel:"스마트스토어",brand:"Mylabs",type:"상시",comm_basis:"actual", qty:2, settlement:231933, sales:248400, cost_usd:20.37},
-      {label:"VS Formula Prime 3pk", channel:"11번가",      brand:"Mylabs",type:"상시",comm_basis:"actual", qty:2, settlement:313260, sales:414000, cost_usd:28.155},
-      {label:"Berberine Alpha 3pk",  channel:"스마트스토어",brand:"Mylabs",type:"상시",comm_basis:"actual", qty:4, settlement:617646, sales:661499, cost_usd:36.525},
-      {label:"Berberine Alpha 1pk",  channel:"스마트스토어",brand:"Mylabs",type:"상시",comm_basis:"actual", qty:6, settlement:320263, sales:343002, cost_usd:14.67},
-      // YDY 상시
-      {label:"NAD+ Tri Complex 3pk", channel:"스마트스토어",brand:"YDY",  type:"상시",comm_basis:"actual", qty:1, settlement:173949, sales:186300, cost_usd:58.77},
-      {label:"Circu Pycnogenol 1pk", channel:"스마트스토어",brand:"YDY",  type:"상시",comm_basis:"actual", qty:1, settlement:70028,  sales:75000,  cost_usd:27.79},
-      {label:"Magduo K2 3pk",        channel:"스마트스토어",brand:"YDY",  type:"상시",comm_basis:"actual", qty:1, settlement:73109,  sales:78300,  cost_usd:34.77},
-      {label:"Magduo K2 2pk",        channel:"스마트스토어",brand:"YDY",  type:"상시",comm_basis:"actual", qty:1, settlement:51448,  sales:55100,  cost_usd:24.78},
+      {label:"Berberine Alpha 6pk(공구)", channel:"스마트스토어", brand:"Mylabs", type:"공구", comm_basis:"actual", pharmacist:"봄약사", qty:1, settlement:172735, sales:185000, cost_usd:59.06, ship_usd:8.3},
+      {label:"VS Formula Prime 2pk", channel:"쿠팡", brand:"Mylabs", type:"상시", comm_basis:"actual", qty:3, settlement:239872, sales:276000, cost_usd:15.18, ship_usd:4.8},
+      {label:"VS Formula Prime 3pk", channel:"쿠팡 Lavita", brand:"Mylabs", type:"상시", comm_basis:"actual", qty:2, settlement:215904, sales:248400, cost_usd:20.37, ship_usd:4.8},
+      {label:"VS Formula Prime 3pk", channel:"스마트스토어", brand:"Mylabs", type:"상시", comm_basis:"actual", qty:2, settlement:231933, sales:248400, cost_usd:20.37, ship_usd:4.8},
+      {label:"VS Formula Prime 3pk", channel:"11번가", brand:"Mylabs", type:"상시", comm_basis:"actual", qty:2, settlement:313260, sales:414000, cost_usd:28.155, ship_usd:4.8},
+      {label:"Berberine Alpha 3pk", channel:"스마트스토어", brand:"Mylabs", type:"상시", comm_basis:"actual", qty:4, settlement:617646, sales:661499, cost_usd:36.525, ship_usd:4.8},
+      {label:"Berberine Alpha 1pk", channel:"스마트스토어", brand:"Mylabs", type:"상시", comm_basis:"actual", qty:6, settlement:320263, sales:343002, cost_usd:14.67, ship_usd:4.8},
+      {label:"NAD+ Tri Complex 3pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", qty:1, settlement:173949, sales:186300, cost_usd:58.77, ship_usd:4.8},
+      {label:"Circu Pycnogenol 1pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", qty:1, settlement:70028, sales:75000, cost_usd:27.79, ship_usd:4.8},
+      {label:"Magduo K2 3pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", qty:1, settlement:73109, sales:78300, cost_usd:34.77, ship_usd:4.8},
+      {label:"Magduo K2 2pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", qty:1, settlement:51448, sales:55100, cost_usd:24.78, ship_usd:4.8}
     ]
   },
   {
     id:"2026-06-w2", label:"2026년 6월 2주차",
     orders:[
-      // YDY 상시
-      {label:"BQ10 CoQ10 2pk",       channel:"스마트스토어",brand:"YDY",  type:"상시",comm_basis:"actual", qty:21,settlement:1958544,sales:2097602,cost_usd:40.92},
-      {label:"BQ10 CoQ10 3pk",       channel:"스마트스토어",brand:"YDY",  type:"상시",comm_basis:"actual", qty:7, settlement:968064, sales:1036797, cost_usd:61.337},
-      {label:"NAD+ Tri Complex 3pk", channel:"스마트스토어",brand:"YDY",  type:"상시",comm_basis:"actual", qty:1, settlement:173949, sales:186300, cost_usd:58.77},
-      {label:"NAD+ Tri Complex 2pk", channel:"스마트스토어",brand:"YDY",  type:"상시",comm_basis:"actual", qty:1, settlement:122409, sales:131100, cost_usd:40.78},
-      {label:"Circu Pycnogenol 2pk", channel:"스마트스토어",brand:"YDY",  type:"상시",comm_basis:"actual", qty:1, settlement:133053, sales:142500, cost_usd:50.78},
-      {label:"Magduo K2 3pk",        channel:"스마트스토어",brand:"YDY",  type:"상시",comm_basis:"actual", qty:2, settlement:146218, sales:156600, cost_usd:34.77},
-      {label:"Magduo K2 2pk",        channel:"스마트스토어",brand:"YDY",  type:"상시",comm_basis:"actual", qty:1, settlement:51448,  sales:55100,  cost_usd:24.78},
-      // Mylabs 상시
-      {label:"VS Formula Prime 3pk", channel:"스마트스토어",brand:"Mylabs",type:"상시",comm_basis:"actual", qty:5, settlement:582168, sales:621000, cost_usd:20.37},
-      {label:"VS Formula Prime 2pk", channel:"쿠팡",        brand:"Mylabs",type:"상시",comm_basis:"actual", qty:1, settlement:79957,  sales:92000,  cost_usd:15.18},
-      {label:"VS Formula Prime 1pk", channel:"스마트스토어",brand:"Mylabs",type:"상시",comm_basis:"actual", qty:2, settlement:85902,  sales:92000,  cost_usd:9.99},
-      {label:"Berberine Alpha 3pk",  channel:"스마트스토어",brand:"Mylabs",type:"상시",comm_basis:"actual", qty:6, settlement:697664, sales:747199, cost_usd:30.18},
-      {label:"Berberine Alpha 1pk",  channel:"스마트스토어",brand:"Mylabs",type:"상시",comm_basis:"actual", qty:1, settlement:45752,  sales:49000,  cost_usd:13.26},
+      {label:"BQ10 CoQ10 2pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", qty:21, settlement:1958544, sales:2097602, cost_usd:40.92, ship_usd:7.3},
+      {label:"BQ10 CoQ10 3pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", qty:7, settlement:968064, sales:1036797, cost_usd:61.337, ship_usd:7.3},
+      {label:"NAD+ Tri Complex 3pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", qty:1, settlement:173949, sales:186300, cost_usd:58.77, ship_usd:4.8},
+      {label:"NAD+ Tri Complex 2pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", qty:1, settlement:122409, sales:131100, cost_usd:40.78, ship_usd:4.8},
+      {label:"Circu Pycnogenol 2pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", qty:1, settlement:133053, sales:142500, cost_usd:50.78, ship_usd:4.8},
+      {label:"Magduo K2 3pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", qty:2, settlement:146218, sales:156600, cost_usd:34.77, ship_usd:4.8},
+      {label:"Magduo K2 2pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", qty:1, settlement:51448, sales:55100, cost_usd:24.78, ship_usd:4.8},
+      {label:"VS Formula Prime 3pk", channel:"스마트스토어", brand:"Mylabs", type:"상시", comm_basis:"actual", qty:5, settlement:582168, sales:621000, cost_usd:20.37, ship_usd:4.8},
+      {label:"VS Formula Prime 2pk", channel:"쿠팡", brand:"Mylabs", type:"상시", comm_basis:"actual", qty:1, settlement:79957, sales:92000, cost_usd:15.18, ship_usd:4.8},
+      {label:"VS Formula Prime 1pk", channel:"스마트스토어", brand:"Mylabs", type:"상시", comm_basis:"actual", qty:2, settlement:85902, sales:92000, cost_usd:9.99, ship_usd:4.8},
+      {label:"Berberine Alpha 3pk", channel:"스마트스토어", brand:"Mylabs", type:"상시", comm_basis:"actual", qty:6, settlement:697664, sales:747199, cost_usd:30.18, ship_usd:4.8},
+      {label:"Berberine Alpha 1pk", channel:"스마트스토어", brand:"Mylabs", type:"상시", comm_basis:"actual", qty:1, settlement:45752, sales:49000, cost_usd:13.26, ship_usd:4.8}
     ]
   },
 ];
+
 const COST_TABLE = [
   {brand:"Mylabs",product:"Berberine Alpha",     unit:8.46, ship:4.80},
   {brand:"Mylabs",product:"VS Formula Prime",    unit:5.19, ship:4.80},
@@ -314,7 +312,7 @@ function loadExtra(){try{return JSON.parse(localStorage.getItem(LS))||[];}catch{
 function allOrders(){return[...PERIODS_DATA.flatMap(p=>p.orders.map(o=>({...o,period:p.id}))),...loadExtra().flatMap(p=>p.orders.map(o=>({...o,period:p.id})))];}
 function allPeriods(){return[...PERIODS_DATA,...loadExtra()];}
 function filtered(){const a=allOrders();return selPeriod==="all"?a:a.filter(o=>o.period===selPeriod);}
-function calc(arr){return arr.map(o=>{const ph=o.ph_krw||0;const ck=o.cost_usd*RATE*o.qty+ph;return {...o,cost_krw:ck,commission:o.sales-o.settlement,margin:o.settlement-ck};});}
+function calc(arr){return arr.map(o=>{const ship=(o.ship_usd||0)*RATE*o.qty;const ph=o.ph_krw||0;const tot=o.cost_usd*RATE*o.qty;return {...o,prod_krw:tot-ship,ship_krw:ship,pharm_krw:ph,cost_krw:tot+ph,commission:o.sales-o.settlement,margin:o.settlement-(tot+ph)};});}
 
 // ── Utils ─────────────────────────────────────────────────────────────────────
 const fmt =n=>"₩"+Math.round(n).toLocaleString("ko-KR");
@@ -343,7 +341,7 @@ function setPeriod(id){selPeriod=id;renderPills();renderAll();}
 // ── Main render ───────────────────────────────────────────────────────────────
 function renderAll(){
   const data=calc(filtered());
-  const tq=sum(data,"qty"),ts=sum(data,"sales"),tc=sum(data,"commission"),tset=sum(data,"settlement"),tcost=sum(data,"cost_krw"),tmar=sum(data,"margin");
+  const tq=sum(data,"qty"),ts=sum(data,"sales"),tc=sum(data,"commission"),tset=sum(data,"settlement"),tcost=sum(data,"cost_krw"),tmar=sum(data,"margin"),tprod=sum(data,"prod_krw"),tship=sum(data,"ship_krw"),tpharm=sum(data,"pharm_krw");
 
   document.getElementById("rate-chip").textContent=`$1 = ₩${RATE.toFixed(0)}`;
   document.getElementById("rate-src").textContent=rateSrc;
@@ -354,7 +352,9 @@ function renderAll(){
   document.getElementById("f-comm").textContent=fmt(tc);
   document.getElementById("f-comm-pct").textContent=ts>0?pct(tc/ts):"—";
   document.getElementById("f-set").textContent=fmt(tset);
-  document.getElementById("f-cost").textContent=fmt(tcost);
+  document.getElementById("f-cost").textContent=fmt(tprod);
+  document.getElementById("f-ship").textContent=fmt(tship);
+  document.getElementById("f-pharm").textContent=tpharm>0?fmt(tpharm):"—";
   document.getElementById("f-rate").textContent=`@${RATE.toFixed(0)}`;
   document.getElementById("f-margin").textContent=fmt(tmar);
   document.getElementById("f-mpct").textContent=tset>0?`마진율 ${pct(tmar/tset)}`:"—";
