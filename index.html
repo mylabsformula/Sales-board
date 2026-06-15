@@ -513,7 +513,7 @@ function renderChannelSummary(data) {
   if(selPeriod==="all"){
     const iu=n=>"$"+Math.round(n).toLocaleString("en-US");
     const ig=IHERB_DATA.reduce((s,p)=>s+p.gross,0),inet=IHERB_DATA.reduce((s,p)=>s+p.net,0),ic=IHERB_DATA.reduce((s,p)=>s+p.cost*p.qty,0),iq=IHERB_DATA.reduce((s,p)=>s+p.qty,0);
-    const iall=ig-inet,imar=inet-ic,imp=inet>0?imar/inet:0,icol=imar>=0?"#059669":"#dc2626";
+    const ish=IHERB_SHIP.total,iall=ig-inet,imar=inet-ic-ish,imp=inet>0?imar/inet:0,icol=imar>=0?"#059669":"#dc2626";
     rows+=`<tr style="background:#ecfeff">
       <td class="left"><span class="tag tag-iherb">iHerb</span> <span style="font-size:9px;color:#0891b2">US·$</span></td>
       <td>${iq.toLocaleString()}</td>
@@ -521,7 +521,7 @@ function renderChannelSummary(data) {
       <td class="orange">▼${iu(iall)} <span class="gray" style="font-size:10px">(${pct(iall/ig)})</span></td>
       <td>${iu(inet)}</td>
       <td class="red">▼${iu(ic)}</td>
-      <td>—</td><td>—</td>
+      <td class="red">▼${iu(ish)}</td><td>—</td>
       <td class="bold" style="color:${icol}">${iu(imar)}</td>
       <td style="color:${icol}">${pct(imp)}</td>
     </tr>`;
@@ -748,6 +748,7 @@ function renderCosts(){
 
 // ── iHerb 미국 도매 (US Sales, USD 기준 · 한국 리테일과 분리) ──────────────────
 const IHERB_MON_PROD = {"products": ["BQ10 CoQ10", "Berberine Alpha", "Chelated Mag K2", "Berberine MS", "Phytosome", "VS Formula Prime"], "rows": [{"ym": "2026-01", "q": [360, 480, 192, 132, 0, 0], "total": 1164}, {"ym": "2026-02", "q": [48, 96, 0, 0, 0, 144], "total": 288}, {"ym": "2026-03", "q": [1272, 1584, 720, 360, 240, 72], "total": 4248}, {"ym": "2026-04", "q": [336, 0, 24, 0, 0, 0], "total": 360}, {"ym": "2026-05", "q": [1248, 72, 408, 0, 168, 0], "total": 1896}, {"ym": "2026-06", "q": [144, 288, 120, 0, 0, 0], "total": 552}]};
+const IHERB_SHIP = {"ca_boxes": 241, "ky_boxes": 53, "ca": 4097, "ky": 1431, "total": 5528, "by_month": {"2026-03": 3359, "2026-04": 325, "2026-05": 1433, "2026-06": 411}};
 const IHERB_MONTHLY = [{"ym": "2026-01", "qty": 1164, "gross": 18468.36, "net": 16603.06, "cost": 12605.64}, {"ym": "2026-02", "qty": 288, "gross": 4353.12, "net": 3913.45, "cost": 2351.04}, {"ym": "2026-03", "qty": 4248, "gross": 66815.52, "net": 64974.72, "cost": 47662.8}, {"ym": "2026-04", "qty": 360, "gross": 5780.4, "net": 5780.4, "cost": 5780.4}, {"ym": "2026-05", "qty": 1896, "gross": 28637.04, "net": 19343.28, "cost": 27950.88}, {"ym": "2026-06", "qty": 552, "gross": 8754.48, "net": 8754.48, "cost": 6009.84}];
 const IHERB_DATA = [{"label": "BQ10 CoQ10", "brand": "YDY", "qty": 3408, "gross": 56197.92, "net": 48811.04, "cost": 16.49}, {"label": "Berberine Alpha", "brand": "Mylabs", "qty": 2520, "gross": 45334.8, "net": 42656.17, "cost": 8.46}, {"label": "Chelated Mag K2", "brand": "YDY", "qty": 1464, "gross": 14625.36, "net": 13021.32, "cost": 9.99}, {"label": "Berberine MS", "brand": "Mylabs", "qty": 492, "gross": 7375.08, "net": 7175.23, "cost": 5.23}, {"label": "Phytosome", "brand": "YDY", "qty": 408, "gross": 6523.92, "net": 5288.79, "cost": 15.99}, {"label": "VS Formula Prime", "brand": "Mylabs", "qty": 216, "gross": 2751.84, "net": 2416.84, "cost": 5.19}];
 function renderIherb(){
@@ -771,7 +772,7 @@ function renderIherb(){
       <td style="color:${col(mar)}">${pc(mp)}</td>
     </tr>`;
   }).join("");
-  const allow=G-N, mar=N-C, mp=N>0?mar/N:0;
+  const ship=IHERB_SHIP.total, allow=G-N, mar=N-C-ship, mp=N>0?mar/N:0;
   const bsplit=["Mylabs","YDY"].map(b=>{
     const ps=IHERB_DATA.filter(p=>p.brand===b);
     const n=ps.reduce((s,p)=>s+p.net,0),c=ps.reduce((s,p)=>s+p.cost*p.qty,0),m=n-c;
@@ -779,8 +780,8 @@ function renderIherb(){
       <div style="font-size:11px;color:#6b7280;margin-top:4px;">정산 ${usd(n)} · 원가 ${usd(c)} · 마진율 ${pc(n>0?m/n:0)} <span class="gray">(${won(m*RATE)})</span></div></div>`;
   }).join("");
   const mrows=IHERB_MONTHLY.map(m=>{
-    const mm=m.net-m.cost, mmp=m.net>0?mm/m.net:0;
-    return `<tr><td class="left">${m.ym}</td><td>${m.qty.toLocaleString()}</td><td>${usd(m.gross)}</td><td class="orange">▼${usd(m.gross-m.net)}</td><td>${usd(m.net)}</td><td class="red">▼${usd(m.cost)}</td><td class="bold" style="color:${col(mm)}">${usd(mm)} <span class="gray" style="font-size:10px">(${won(mm*RATE)})</span></td><td style="color:${col(mm)}">${pc(mmp)}</td></tr>`;
+    const ms=IHERB_SHIP.by_month[m.ym]||0, mm=m.net-m.cost-ms, mmp=m.net>0?mm/m.net:0;
+    return `<tr><td class="left">${m.ym}</td><td>${m.qty.toLocaleString()}</td><td>${usd(m.gross)}</td><td class="orange">▼${usd(m.gross-m.net)}</td><td>${usd(m.net)}</td><td class="red">▼${usd(m.cost)}</td><td class="red">${ms?"▼"+usd(ms):"—"}</td><td class="bold" style="color:${col(mm)}">${usd(mm)} <span class="gray" style="font-size:10px">(${won(mm*RATE)})</span></td><td style="color:${col(mm)}">${pc(mmp)}</td></tr>`;
   }).join("");
   const matRows=IHERB_MON_PROD.rows.map(r=>`<tr><td class="left">${r.ym}</td>${r.q.map(q=>`<td>${q.toLocaleString()}</td>`).join("")}<td class="bold">${r.total.toLocaleString()}</td></tr>`).join("");
   const colTot=IHERB_MON_PROD.products.map((_,i)=>IHERB_MON_PROD.rows.reduce((s,r)=>s+r.q[i],0));
@@ -794,12 +795,13 @@ function renderIherb(){
       <div class="flow-item orange"><div class="fl">공제</div><div class="fv">${usd(allow)}</div><div class="fs">${pc(allow/G)}</div></div>
       <div class="flow-item"><div class="fl">정산</div><div class="fv">${usd(N)}</div><div class="fs">인보이스</div></div>
       <div class="flow-item red"><div class="fl">원가</div><div class="fv">${usd(C)}</div><div class="fs">COGS</div></div>
-      <div class="flow-item"><div class="fl">마진</div><div class="fv" style="color:${col(mar)}">${usd(mar)}</div><div class="fs">${won(mar*RATE)} · ${pc(mp)}</div></div>
+      <div class="flow-item red"><div class="fl">배송비</div><div class="fv">${usd(ship)}</div><div class="fs">CA $4,097·KY $1,431</div></div>
+      <div class="flow-item"><div class="fl">순마진</div><div class="fv" style="color:${col(mar)}">${usd(mar)}</div><div class="fs">${won(mar*RATE)} · ${pc(mp)}</div></div>
     </div>
     <div class="brand-row" style="padding:0 0 12px;">${bsplit}</div>
     <div style="font-size:12px;font-weight:700;color:#0e7490;margin:2px 2px 8px;">📅 월별</div>
     <div class="tbl-wrap" style="margin-bottom:16px;"><table>
-      <thead><tr><th class="left">월</th><th>수량</th><th>매출</th><th>공제</th><th>정산</th><th>원가</th><th>마진 (₩)</th><th>마진율</th></tr></thead>
+      <thead><tr><th class="left">월</th><th>수량</th><th>매출</th><th>공제</th><th>정산</th><th>원가</th><th>배송</th><th>마진 (₩)</th><th>마진율</th></tr></thead>
       <tbody>${mrows}</tbody>
     </table></div>
     <div style="font-size:12px;font-weight:700;color:#0e7490;margin:2px 2px 8px;">📅 월별 제품 수량 (개)</div>
@@ -816,7 +818,7 @@ function renderIherb(){
         <tr class="total-row"><td class="left">합계</td><td></td><td>${Q.toLocaleString()}</td><td>${usd(G)}</td><td class="orange">▼${usd(allow)}</td><td>${usd(N)}</td><td class="red">▼${usd(C)}</td><td style="color:${col(mar)}">${usd(mar)} (${won(mar*RATE)})</td><td>${pc(mp)}</td></tr>
       </tbody>
     </table></div>
-    <div style="font-size:10px;color:#9ca3af;margin-top:8px;line-height:1.5;">· YDY 제품(BQ10·마그네슘·파이토좀)은 도매가가 원가와 같아 공제 후 마진 마이너스 · 원가는 원가표 단가 기준 · Double Strength는 VS Formula로 합산</div>`;
+    <div style="font-size:10px;color:#9ca3af;margin-top:8px;line-height:1.5;">· 배송비: CA(Moreno Valley) $17/박스·KY(Hebron) $27/박스, 24개입 기준 → SPS $5,528 (초기 1~2월은 허브 정보 없어 미반영) · 제품별 표의 마진은 <b>배송비 차감 전</b> · YDY 제품은 도매가=원가라 공제 후 마진 마이너스 · Double Strength는 VS Formula로 합산</div>`;
 }
 
 // ── Tab switch ────────────────────────────────────────────────────────────────
