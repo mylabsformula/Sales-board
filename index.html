@@ -773,11 +773,12 @@ function renderIherb(){
     </tr>`;
   }).join("");
   const ship=IHERB_SHIP.total, allow=G-N, mar=N-C-ship, mp=N>0?mar/N:0;
+  const BRAND_SHIP={Mylabs:2472,YDY:4070};
   const bsplit=["Mylabs","YDY"].map(b=>{
     const ps=IHERB_DATA.filter(p=>p.brand===b);
-    const n=ps.reduce((s,p)=>s+p.net,0),c=ps.reduce((s,p)=>s+p.cost*p.qty,0),m=n-c;
-    return `<div class="brand-card"><div class="bc-head"><span class="bc-name">${b==="Mylabs"?"🔵 Mylabs":"🟣 YDY"}</span><span class="bc-mar" style="color:${col(m)}">${usd(m)}</span></div>
-      <div style="font-size:11px;color:#6b7280;margin-top:4px;">정산 ${usd(n)} · 원가 ${usd(c)} · 마진율 ${pc(n>0?m/n:0)} <span class="gray">(${won(m*RATE)})</span></div></div>`;
+    const n=ps.reduce((s,p)=>s+p.net,0),c=ps.reduce((s,p)=>s+p.cost*p.qty,0),sh=BRAND_SHIP[b]||0,m=n-c-sh;
+    return `<div class="brand-card"><div class="bc-head"><span class="bc-name">${b==="Mylabs"?"🔵 Mylabs":"🟣 YDY"}</span><span class="bc-mar" style="color:${col(m)}">${usd(m)} <span class="gray" style="font-size:10px">(${won(m*RATE)})</span></span></div>
+      <div style="font-size:11px;color:#6b7280;margin-top:4px;">정산 ${usd(n)} · 원가 ${usd(c)} · 배송 ▼${usd(sh)} · 마진율 ${pc(n>0?m/n:0)}</div></div>`;
   }).join("");
   const mrows=IHERB_MONTHLY.map(m=>{
     const ms=IHERB_SHIP.by_month[m.ym]||0, mm=m.net-m.cost-ms, mmp=m.net>0?mm/m.net:0;
@@ -816,7 +817,7 @@ function renderIherb(){
         <tr class="total-row"><td class="left">합계</td><td></td><td>${Q.toLocaleString()}</td><td>${usd(G)}</td><td class="red">▼${usd(C)}</td><td style="color:${col(mar)}">${usd(mar)} (${won(mar*RATE)})</td><td>${pc(mp)}</td></tr>
       </tbody>
     </table></div>
-    <div style="font-size:10px;color:#9ca3af;margin-top:8px;line-height:1.5;">· iHerb는 <b>공제 없음</b> (매출 = 인보이스 금액) · 배송비 CA $17·KY $27/박스(24개입) = $6,542 · 제품별 표 마진은 <b>배송 차감 전</b> · YDY는 도매가=원가라 제품마진 0 → 배송비가 곧 손실 · 초기 1월 Berberine MS는 반품(크레딧메모) 반영 · Double Strength→VS Formula 합산</div>`;
+    <div style="font-size:10px;color:#9ca3af;margin-top:8px;line-height:1.5;">· iHerb는 <b>공제 없음</b> (매출 = 인보이스 금액) · 배송비 CA $17·KY $27/박스(24개입) = $6,542 · <b>브랜드 카드 마진 = 배송 차감 후</b> (YDY는 제품마진 0이라 배송비 $4,070이 곧 손실) · 제품별 표 마진은 배송 차감 전 · 초기 1월 Berberine MS는 반품(크레딧메모) 반영 · Double Strength→VS Formula 합산</div>`;
 }
 
 // ── Tab switch ────────────────────────────────────────────────────────────────
