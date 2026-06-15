@@ -750,7 +750,7 @@ function renderCosts(){
 const IHERB_MON_PROD = {"products": ["BQ10 CoQ10", "Berberine Alpha", "Chelated Mag K2", "Berberine MS", "Phytosome", "VS Formula Prime"], "rows": [{"ym": "2026-01", "q": [360, 480, 192, -84, 0, 0], "total": 948}, {"ym": "2026-02", "q": [48, 96, 0, 0, 0, 144], "total": 288}, {"ym": "2026-03", "q": [1272, 1584, 720, 360, 240, 72], "total": 4248}, {"ym": "2026-04", "q": [336, 0, 24, 0, 0, 0], "total": 360}, {"ym": "2026-05", "q": [1248, 72, 408, 0, 168, 0], "total": 1896}, {"ym": "2026-06", "q": [144, 288, 120, 0, 0, 0], "total": 552}]};
 const IHERB_ORDERS = 34;
 const IHERB_ORD_MONTH = {"2026-01":4,"2026-02":2,"2026-03":11,"2026-04":3,"2026-05":9,"2026-06":5};
-const IHERB_SHIP = {"ca_boxes": 280, "ky_boxes": 66, "ca": 4760, "ky": 1782, "total": 6542, "by_month": {"2026-01": 740, "2026-02": 274, "2026-03": 3359, "2026-04": 325, "2026-05": 1433, "2026-06": 411}};
+const IHERB_SHIP = {"ca_boxes": 277, "ky_boxes": 73, "ca": 4709, "ky": 1971, "total": 6680, "by_month": {"2026-01": 828, "2026-02": 274, "2026-03": 3409, "2026-04": 325, "2026-05": 1433, "2026-06": 411}};
 const IHERB_MONTHLY = [{"ym": "2026-01", "qty": 948, "gross": 15230.52, "net": 15230.52, "cost": 11475.96}, {"ym": "2026-02", "qty": 288, "gross": 4353.12, "net": 4353.12, "cost": 2351.04}, {"ym": "2026-03", "qty": 4248, "gross": 66815.52, "net": 66815.52, "cost": 47662.8}, {"ym": "2026-04", "qty": 360, "gross": 5780.4, "net": 5780.4, "cost": 5780.4}, {"ym": "2026-05", "qty": 1896, "gross": 28637.04, "net": 28637.04, "cost": 27950.88}, {"ym": "2026-06", "qty": 552, "gross": 8754.48, "net": 8754.48, "cost": 6009.84}];
 const IHERB_DATA = [{"label": "BQ10 CoQ10", "brand": "YDY", "qty": 3408, "gross": 56197.92, "net": 56197.92, "cost": 16.49}, {"label": "Berberine Alpha", "brand": "Mylabs", "qty": 2520, "gross": 45334.8, "net": 45334.8, "cost": 8.46}, {"label": "Chelated Mag K2", "brand": "YDY", "qty": 1464, "gross": 14625.36, "net": 14625.36, "cost": 9.99}, {"label": "Phytosome", "brand": "YDY", "qty": 408, "gross": 6523.92, "net": 6523.92, "cost": 15.99}, {"label": "Berberine MS", "brand": "Mylabs", "qty": 276, "gross": 4137.24, "net": 4137.24, "cost": 5.23}, {"label": "VS Formula Prime", "brand": "Mylabs", "qty": 216, "gross": 2751.84, "net": 2751.84, "cost": 5.19}];
 function renderIherb(){
@@ -773,7 +773,7 @@ function renderIherb(){
     </tr>`;
   }).join("");
   const ship=IHERB_SHIP.total, allow=G-N, mar=N-C-ship, mp=N>0?mar/N:0;
-  const BRAND_SHIP={Mylabs:2472,YDY:4070};
+  const BRAND_SHIP={Mylabs:2600,YDY:4080};
   const bsplit=["Mylabs","YDY"].map(b=>{
     const ps=IHERB_DATA.filter(p=>p.brand===b);
     const n=ps.reduce((s,p)=>s+p.net,0),c=ps.reduce((s,p)=>s+p.cost*p.qty,0),sh=BRAND_SHIP[b]||0,m=n-c-sh;
@@ -794,7 +794,7 @@ function renderIherb(){
       <div class="flow-item"><div class="fl">주문</div><div class="fv">${IHERB_ORDERS}건</div><div class="fs">${Q.toLocaleString()}개</div></div>
       <div class="flow-item"><div class="fl">매출</div><div class="fv">${usd(G)}</div><div class="fs">=인보이스</div></div>
       <div class="flow-item red"><div class="fl">원가</div><div class="fv">${usd(C)}</div><div class="fs">COGS</div></div>
-      <div class="flow-item red"><div class="fl">배송비</div><div class="fv">${usd(ship)}</div><div class="fs">CA $4,760·KY $1,782</div></div>
+      <div class="flow-item red"><div class="fl">배송비</div><div class="fv">${usd(ship)}</div><div class="fs">CA $4,709·KY $1,971</div></div>
       <div class="flow-item"><div class="fl">순마진</div><div class="fv" style="color:${col(mar)}">${usd(mar)}</div><div class="fs">${won(mar*RATE)} · ${pc(mp)}</div></div>
     </div>
     <div class="brand-row" style="padding:0 0 12px;">${bsplit}</div>
@@ -817,7 +817,7 @@ function renderIherb(){
         <tr class="total-row"><td class="left">합계</td><td></td><td>${Q.toLocaleString()}</td><td>${usd(G)}</td><td class="red">▼${usd(C)}</td><td style="color:${col(mar)}">${usd(mar)} (${won(mar*RATE)})</td><td>${pc(mp)}</td></tr>
       </tbody>
     </table></div>
-    <div style="font-size:10px;color:#9ca3af;margin-top:8px;line-height:1.5;">· iHerb는 <b>공제 없음</b> (매출 = 인보이스 금액) · 배송비 CA $17·KY $27/박스(24개입) = $6,542 · <b>브랜드 카드 마진 = 배송 차감 후</b> (YDY는 제품마진 0이라 배송비 $4,070이 곧 손실) · 제품별 표 마진은 배송 차감 전 · 초기 1월 Berberine MS는 반품(크레딧메모) 반영 · Double Strength→VS Formula 합산</div>`;
+    <div style="font-size:10px;color:#9ca3af;margin-top:8px;line-height:1.5;">· iHerb는 <b>공제 없음</b> (매출 = 인보이스 금액) · 배송비 CA $17·KY $27/박스(24개입) = $6,542 · <b>브랜드 카드 마진 = 배송 차감 후</b> (YDY는 제품마진 0이라 배송비 $4,080이 곧 손실) · 제품별 표 마진은 배송 차감 전 · 초기 1월 Berberine MS는 반품(크레딧메모) 반영 · Double Strength→VS Formula 합산</div>`;
 }
 
 // ── Tab switch ────────────────────────────────────────────────────────────────
