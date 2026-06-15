@@ -195,6 +195,7 @@ tr:hover td{background:#fafafa;}
     <div class="tab" onclick="switchTab('mylabs')">🔵 Mylabs</div>
     <div class="tab" onclick="switchTab('ydy')">🟣 YDY</div>
     <div class="tab" onclick="switchTab('costs')">💰 원가표</div>
+    <div class="tab" onclick="switchTab('iherb')">🌐 iHerb (US)</div>
   </div>
 
   <!-- 전체 요약 -->
@@ -228,6 +229,9 @@ tr:hover td{background:#fafafa;}
       </table>
     </div>
   </div>
+
+  <!-- iHerb (US) -->
+  <div class="tab-body" id="tab-iherb"></div>
 
 </div>
 </div>
@@ -446,6 +450,7 @@ function renderAll(){
   renderSection(data,"YDY","상시","ydy-sansi");
 
   renderCosts();
+  renderIherb();
   document.getElementById("footer").textContent=`${new Date().toLocaleString("ko-KR")} 기준 · 환율 ${rateSrc} · ${allPeriods().length}개 기간`;
 }
 
@@ -724,9 +729,61 @@ function renderCosts(){
 }
 
 
+
+// ── iHerb 미국 도매 (US Sales, USD 기준 · 한국 리테일과 분리) ──────────────────
+const IHERB_DATA = [{"label": "BQ10 CoQ10", "brand": "YDY", "qty": 3408, "gross": 56197.92, "net": 48811.04, "cost": 16.49}, {"label": "Berberine Alpha", "brand": "Mylabs", "qty": 2520, "gross": 45334.8, "net": 42656.17, "cost": 8.46}, {"label": "Chelated Mag K2", "brand": "YDY", "qty": 1464, "gross": 14625.36, "net": 13021.32, "cost": 9.99}, {"label": "Berberine MS", "brand": "Mylabs", "qty": 492, "gross": 7375.08, "net": 7175.23, "cost": 5.23}, {"label": "Phytosome", "brand": "YDY", "qty": 408, "gross": 6523.92, "net": 5288.79, "cost": 15.99}, {"label": "VS Formula Prime", "brand": "Mylabs", "qty": 216, "gross": 2751.84, "net": 2416.84, "cost": 5.19}];
+function renderIherb(){
+  const usd=n=>"$"+Math.round(n).toLocaleString("en-US");
+  const won=n=>"₩"+Math.round(n).toLocaleString("ko-KR");
+  const pc=n=>(n*100).toFixed(1)+"%";
+  const col=m=>m>=0?"#059669":"#dc2626";
+  let G=0,N=0,C=0,Q=0;
+  const rows=[...IHERB_DATA].sort((a,b)=>b.qty-a.qty).map(p=>{
+    const cost=p.cost*p.qty, mar=p.net-cost, mp=p.net>0?mar/p.net:0;
+    G+=p.gross;N+=p.net;C+=cost;Q+=p.qty;
+    return `<tr>
+      <td class="left">${p.label}</td>
+      <td><span class="tag ${p.brand==="Mylabs"?"tag-ml":"tag-ydy"}">${p.brand}</span></td>
+      <td>${p.qty.toLocaleString()}</td>
+      <td>${usd(p.gross)}</td>
+      <td class="orange">▼${usd(p.gross-p.net)}</td>
+      <td>${usd(p.net)}</td>
+      <td class="red">▼${usd(cost)}</td>
+      <td class="bold" style="color:${col(mar)}">${usd(mar)} <span class="gray" style="font-size:10px">(${won(mar*RATE)})</span></td>
+      <td style="color:${col(mar)}">${pc(mp)}</td>
+    </tr>`;
+  }).join("");
+  const allow=G-N, mar=N-C, mp=N>0?mar/N:0;
+  const bsplit=["Mylabs","YDY"].map(b=>{
+    const ps=IHERB_DATA.filter(p=>p.brand===b);
+    const n=ps.reduce((s,p)=>s+p.net,0),c=ps.reduce((s,p)=>s+p.cost*p.qty,0),m=n-c;
+    return `<div class="brand-card"><div class="bc-head"><span class="bc-name">${b==="Mylabs"?"🔵 Mylabs":"🟣 YDY"}</span><span class="bc-mar" style="color:${col(m)}">${usd(m)}</span></div>
+      <div style="font-size:11px;color:#6b7280;margin-top:4px;">정산 ${usd(n)} · 원가 ${usd(c)} · 마진율 ${pc(n>0?m/n:0)} <span class="gray">(${won(m*RATE)})</span></div></div>`;
+  }).join("");
+  document.getElementById("tab-iherb").innerHTML=`
+    <div style="background:#ecfeff;border:1px solid #a5f3fc;border-radius:8px;padding:8px 11px;font-size:11px;color:#0e7490;margin-bottom:12px;line-height:1.5;">
+      🌐 <strong>iHerb 미국 도매 (US Sales)</strong> · USD 기준, 한국 리테일과 분리 집계 · 원화는 환율 <strong>${RATE.toFixed(0)}</strong> 실시간 환산 · 기간 2026.01.09~06.09 (초기 수기 + SPS)</div>
+    <div class="flow-strip" style="border:1px solid #e5e7eb;border-radius:10px;margin-bottom:12px;">
+      <div class="flow-item"><div class="fl">총 수량</div><div class="fv">${Q.toLocaleString()}</div><div class="fs">개</div></div>
+      <div class="flow-item"><div class="fl">매출</div><div class="fv">${usd(G)}</div><div class="fs">gross</div></div>
+      <div class="flow-item orange"><div class="fl">공제</div><div class="fv">${usd(allow)}</div><div class="fs">${pc(allow/G)}</div></div>
+      <div class="flow-item"><div class="fl">정산</div><div class="fv">${usd(N)}</div><div class="fs">인보이스</div></div>
+      <div class="flow-item red"><div class="fl">원가</div><div class="fv">${usd(C)}</div><div class="fs">COGS</div></div>
+      <div class="flow-item"><div class="fl">마진</div><div class="fv" style="color:${col(mar)}">${usd(mar)}</div><div class="fs">${won(mar*RATE)} · ${pc(mp)}</div></div>
+    </div>
+    <div class="brand-row" style="padding:0 0 12px;">${bsplit}</div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th class="left">상품</th><th>브랜드</th><th>수량</th><th>매출</th><th>공제</th><th>정산</th><th>원가</th><th>마진 (₩)</th><th>마진율</th></tr></thead>
+      <tbody>${rows}
+        <tr class="total-row"><td class="left">합계</td><td></td><td>${Q.toLocaleString()}</td><td>${usd(G)}</td><td class="orange">▼${usd(allow)}</td><td>${usd(N)}</td><td class="red">▼${usd(C)}</td><td style="color:${col(mar)}">${usd(mar)} (${won(mar*RATE)})</td><td>${pc(mp)}</td></tr>
+      </tbody>
+    </table></div>
+    <div style="font-size:10px;color:#9ca3af;margin-top:8px;line-height:1.5;">· YDY 제품(BQ10·마그네슘·파이토좀)은 도매가가 원가와 같아 공제 후 마진 마이너스 · 원가는 원가표 단가 기준 · Double Strength는 VS Formula로 합산</div>`;
+}
+
 // ── Tab switch ────────────────────────────────────────────────────────────────
 function switchTab(name){
-  ["total","mylabs","ydy","costs"].forEach((n,i)=>{
+  ["total","mylabs","ydy","costs","iherb"].forEach((n,i)=>{
     document.querySelectorAll(".tab")[i].classList.toggle("active",n===name);
     document.getElementById("tab-"+n).classList.toggle("active",n===name);
   });
