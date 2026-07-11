@@ -196,6 +196,7 @@ tr:hover td{background:#fafafa;}
     <div class="tab" onclick="switchTab('ydy')">🟣 YDY</div>
     <div class="tab" onclick="switchTab('costs')">💰 원가표</div>
     <div class="tab" onclick="switchTab('iherb')">🌐 iHerb (US)</div>
+    <div class="tab" onclick="switchTab('monthly');renderMonthly()">📅 월별 약사공구</div>
   </div>
 
   <!-- 전체 요약 -->
@@ -232,6 +233,7 @@ tr:hover td{background:#fafafa;}
 
   <!-- iHerb (US) -->
   <div class="tab-body" id="tab-iherb"></div>
+  <div class="tab-body" id="tab-monthly"></div>
 
 </div>
 </div>
@@ -871,7 +873,7 @@ function renderIherb(){
 
 // ── Tab switch ────────────────────────────────────────────────────────────────
 function switchTab(name){
-  ["total","mylabs","ydy","costs","iherb"].forEach((n,i)=>{
+  ["total","mylabs","ydy","costs","iherb","monthly"].forEach((n,i)=>{
     document.querySelectorAll(".tab")[i].classList.toggle("active",n===name);
     document.getElementById("tab-"+n).classList.toggle("active",n===name);
   });
@@ -879,6 +881,21 @@ function switchTab(name){
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 renderPills(); renderAll(); fetchRate();
+
+function renderMonthly(){
+  const won=n=>"₩"+Math.round(n).toLocaleString("ko-KR");
+  const mkey=lbl=> lbl.includes("~") ? {k:"2026년 1–5월",o:0} : (function(){var m=lbl.match(/(\d+)월/);return m?{k:m[1]+"월",o:+m[1]}:{k:lbl,o:99};})();
+  const agg={};
+  PERIODS_DATA.forEach(function(p){var mk=mkey(p.label);p.orders.forEach(function(o){if(o.type!=="공구")return;var key=mk.k+"|"+o.pharmacist;if(!agg[key])agg[key]={month:mk.k,mo:mk.o,ph:o.pharmacist,qty:0,sales:0,margin:0,prods:{}};var a=agg[key];a.qty+=o.qty;a.sales+=o.sales;a.margin+=o.settlement-(o.cost_usd*RATE*o.qty)-(o.ph_krw||0);a.prods[o.label.replace(/ ?\d+개묶음/,"")]=1;});});
+  const months={};
+  Object.keys(agg).forEach(function(k){var a=agg[k];(months[a.month]=months[a.month]||{mo:a.mo,rows:[]}).rows.push(a);});
+  const order=Object.keys(months).sort(function(x,y){return months[x].mo-months[y].mo;});
+  let html='<div class="section"><div class="section-title">📅 월별 약사 공구 실적</div>';
+  html+='<div class="assumption">공구(공동구매)만 집계 · 순마진 = 정산 − 원가(@'+Math.round(RATE)+') − 약사수수료 · 판매수량은 묶음(팩) 기준 · <strong>2026년 1–5월</strong>은 보드상 한 구간(5월 3주차까지)으로 묶여 월 분리가 안 됩니다.</div>';
+  order.forEach(function(mn){var g=months[mn];g.rows.sort(function(a,b){return b.qty-a.qty;});var mq=0,ms=0,mm=0,rows="";g.rows.forEach(function(r){mq+=r.qty;ms+=r.sales;mm+=r.margin;var prod=Object.keys(r.prods).join(", ");rows+='<tr><td>'+r.ph+'</td><td style="font-size:0.78rem;color:#6b7280">'+prod+'</td><td class="num">'+r.qty.toLocaleString()+'</td><td class="num">'+won(r.sales)+'</td><td class="num margin-positive">'+won(r.margin)+'</td><td class="num">'+(r.margin/r.sales*100).toFixed(1)+'%</td></tr>';});html+='<div style="font-weight:700;margin:18px 0 6px;color:#1a1a2e">'+mn+'</div><table><thead><tr><th>약사</th><th>상품</th><th class="num">판매수량</th><th class="num">매출</th><th class="num">순마진</th><th class="num">마진율</th></tr></thead><tbody>'+rows+'<tr class="total-row"><td>소계</td><td></td><td class="num">'+mq.toLocaleString()+'</td><td class="num">'+won(ms)+'</td><td class="num">'+won(mm)+'</td><td class="num">'+(mm/ms*100).toFixed(1)+'%</td></tr></tbody></table>';});
+  html+='</div>';
+  document.getElementById("tab-monthly").innerHTML=html;
+}
 </script>
 </body>
 </html>
