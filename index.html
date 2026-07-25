@@ -487,7 +487,8 @@ let RATE=1506.83, rateSrc="캐시", selPeriod="all";
 const LS="sb_v5";
 function loadExtra(){try{return JSON.parse(localStorage.getItem(LS))||[];}catch{return[];}}
 function allOrders(){return[...PERIODS_DATA.flatMap(p=>p.orders.map(o=>({...o,period:p.id}))),...loadExtra().flatMap(p=>p.orders.map(o=>({...o,period:p.id})))];}
-function allPeriods(){return[...PERIODS_DATA,...loadExtra()];}
+function pKey(id){var m=/^(\d{4})-(\d{2})-w(\d)/.exec(id);if(m)return(+m[1])*10000+(+m[2])*100+(+m[3]);var y=/^(\d{4})/.exec(id);return y?(+y[1])*10000:0;}
+function allPeriods(){return[...PERIODS_DATA,...loadExtra()].sort((a,b)=>pKey(b.id)-pKey(a.id));}
 function filtered(){const a=allOrders();return selPeriod==="all"?a:a.filter(o=>o.period===selPeriod);}
 function calc(arr){return arr.map(o=>{const ship=(o.ship_usd||0)*RATE*o.qty;const ph=o.ph_krw||0;const tot=o.cost_usd*RATE*o.qty;return {...o,prod_krw:tot-ship,ship_krw:ship,pharm_krw:ph,cost_krw:tot+ph,commission:o.sales-o.settlement,margin:o.settlement-(tot+ph)};});}
 
