@@ -253,6 +253,28 @@ tr:hover td{background:#fafafa;}
 // 11번가: 건강기능식품 약 11% (Lavita는 판매자할인+서비스료 실제값)
 const PERIODS_DATA = [
   {
+    // 주문파일 Smart(Mylabs_YDY) 090726/090826/090926/091026/091126 (발송대기 스냅샷 5개)
+    // 상품주문번호 기준 중복 제거 후 주문일시 09/07–09/11 건만 집계 (130주문 / 수량 131)
+    id:"2026-09-w2", label:"2026년 9월 2주차",
+    orders:[
+      {label:"BQ10 CoQ10 3개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"약사피셜", qty:31, settlement:3188684, sales:3346000, cost_usd:56.77, ship_usd:7.3},
+      {label:"BQ10 CoQ10 3개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"몸짱약사", qty:8, settlement:817522, sales:864000, cost_usd:56.77, ship_usd:7.3},
+      {label:"BQ10 CoQ10 6개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"약사피셜", qty:16, settlement:3001529, sales:3162000, cost_usd:107.24, ship_usd:8.3},
+      {label:"BQ10 CoQ10 6개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"몸짱약사", qty:3, settlement:562539, sales:594000, cost_usd:107.24, ship_usd:8.3},
+      {label:"Phytosome 3개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"몸짱제니약사", qty:20, settlement:1897406, sales:1999000, cost_usd:55.27, ship_usd:7.3},
+      {label:"Phytosome 6개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"몸짱제니약사", qty:12, settlement:2049194, sales:2155100, cost_usd:104.24, ship_usd:8.3},
+      {label:"Liver-DEX 3개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"형제약사", qty:3, settlement:334750, sales:351000, cost_usd:82.27, ship_usd:7.3},
+      {label:"Liver-DEX 6개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"형제약사", qty:1, settlement:189787, sales:199000, cost_usd:158.24, ship_usd:8.3},
+      {label:"BQ10 CoQ10 1pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", pharmacist:null, qty:8, settlement:358545, sales:384000, cost_usd:21.29, ship_usd:4.8},
+      {label:"BQ10 CoQ10 2pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", pharmacist:null, qty:17, settlement:1449442, sales:1549400, cost_usd:37.78, ship_usd:4.8},
+      {label:"BQ10 CoQ10 3pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", pharmacist:null, qty:5, settlement:607633, sales:648000, cost_usd:54.27, ship_usd:4.8},
+      {label:"Phytosome 3pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", pharmacist:null, qty:1, settlement:108403, sales:116100, cost_usd:52.77, ship_usd:4.8},
+      {label:"Magduo K2 2pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", pharmacist:null, qty:2, settlement:102894, sales:110200, cost_usd:24.78, ship_usd:4.8},
+      {label:"NAD+ 3pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", pharmacist:null, qty:1, settlement:173949, sales:186300, cost_usd:58.77, ship_usd:4.8},
+      {label:"VS Formula Prime 1pk", channel:"스마트스토어", brand:"Mylabs", type:"상시", comm_basis:"actual", pharmacist:null, qty:3, settlement:128853, sales:138000, cost_usd:9.99, ship_usd:4.8}
+    ]
+  },
+  {
     id:"2026-09-w1", label:"2026년 9월 1주차",
     orders:[
       {label:"BQ10 CoQ10 3개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"릴리약사", qty:79, settlement:8098132, sales:8526000, cost_usd:56.77, ship_usd:7.3},
@@ -635,10 +657,11 @@ const COST_TABLE = [
   {brand:"YDY",   product:"Magduo K2",           unit:9.99, ship:4.80},
   {brand:"YDY",   product:"NAD+",                unit:17.99,ship:4.80},
   {brand:"YDY",   product:"Berberine Phytosome", unit:15.99,ship:4.80},
+  {brand:"YDY",   product:"Liver-Dex",           unit:24.99,ship:4.80},
 ];
 
 // ── State ─────────────────────────────────────────────────────────────────────
-let RATE=1506.83, rateSrc="캐시", selPeriod="all";
+let RATE=1342.79, rateSrc="캐시(2026-09-11)", selPeriod="all";
 const LS="sb_v5";
 function loadExtra(){try{return JSON.parse(localStorage.getItem(LS))||[];}catch{return[];}}
 function allOrders(){return[...PERIODS_DATA.flatMap(p=>p.orders.map(o=>({...o,period:p.id}))),...loadExtra().flatMap(p=>p.orders.map(o=>({...o,period:p.id})))];}
