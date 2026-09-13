@@ -1083,7 +1083,7 @@ function renderIherb(){
   const grand=colTot.reduce((a,b)=>a+b,0);
   document.getElementById("tab-iherb").innerHTML=`
     <div style="background:#ecfeff;border:1px solid #a5f3fc;border-radius:8px;padding:8px 11px;font-size:11px;color:#0e7490;margin-bottom:12px;line-height:1.5;">
-      🌐 <strong>iHerb 미국 도매 (US Sales)</strong> · USD 기준, 한국 리테일과 분리 집계 · 원화는 환율 <strong>${RATE.toFixed(0)}</strong> 실시간 환산 · 기간 2026.01~2026.09</div>
+      🌐 <strong>iHerb 미국 도매 (US Sales)</strong> · USD 기준, 한국 리테일과 분리 집계 · 원화는 환율 <strong>${RATE.toFixed(0)}</strong> 실시간 환산 · 기간 ${IHERB_MONTHLY[0].ym.replace("-",".")}~${IHERB_MONTHLY.at(-1).ym.replace("-",".")}</div>
     <div class="flow-strip" style="border:1px solid #e5e7eb;border-radius:10px;margin-bottom:12px;">
       <div class="flow-item"><div class="fl">주문</div><div class="fv">${IHERB_ORDERS}건</div><div class="fs">${Q.toLocaleString()}개</div></div>
       <div class="flow-item"><div class="fl">매출</div><div class="fv">${usd(G)}</div><div class="fs">=인보이스</div></div>
@@ -1111,7 +1111,7 @@ function renderIherb(){
         <tr class="total-row"><td class="left">합계</td><td></td><td>${Q.toLocaleString()}</td><td>${usd(G)}</td><td class="red">▼${usd(C)}</td><td style="color:${col(mar)}">${usd(mar)} (${won(mar*RATE)})</td><td>${pc(mp)}</td></tr>
       </tbody>
     </table></div>
-    <div style="font-size:10px;color:#9ca3af;margin-top:8px;line-height:1.5;">· iHerb는 <b>공제 없음</b> (매출 = 인보이스 금액) · 배송비 CA $17·KY $27/박스(24개입) = $6,542 · <b>브랜드 카드 마진 = 배송 차감 후</b> (YDY는 제품마진 0이라 배송비 $4,080이 곧 손실) · 제품별 표 마진은 배송 차감 전 · 초기 1월 Berberine MS는 반품(크레딧메모) 반영 · Double Strength→VS Formula 합산</div>`;
+    <div style="font-size:10px;color:#9ca3af;margin-top:8px;line-height:1.5;">· iHerb는 <b>공제 없음</b> (매출 = 인보이스 금액) · 배송비 CA $17·KY $27/박스(24개입) = ${usd(ship)} · <b>브랜드 카드 마진 = 배송 차감 후</b> (YDY는 제품마진 0이라 배송비 ${usd(BRAND_SHIP["YDY"])}가 곧 손실) · 제품별 표 마진은 배송 차감 전 · 초기 1월 Berberine MS는 반품(크레딧메모) 반영 · Double Strength→VS Formula 합산</div>`;
 }
 
 // ── Tab switch ────────────────────────────────────────────────────────────────
