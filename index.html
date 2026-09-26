@@ -253,6 +253,35 @@ tr:hover td{background:#fafafa;}
 // 11번가: 건강기능식품 약 11% (Lavita는 판매자할인+서비스료 실제값)
 const PERIODS_DATA = [
   {
+    // 주문파일 Smart(Mylabs_YDY) 092426(09/19–09/25 발송대기 누적)/092526, Smart(Mylabs_1) 092526
+    // + 11st(Mylabs) 092426, Coupang(Mylabs) 092426/092526
+    // 상품주문번호 기준 중복 제거 후 주문일시 09/19–09/25 건만 집계
+    // 091826 스냅샷의 09/19 00:08–01:01 파이토좀 3개묶음 5건(3주차 이월분) 포함 (092426 스냅샷에는 없음)
+    // 09/26 00:15–00:39 주문 4건(파이토좀 3·6개묶음, BQ10 3pk, VS 3pk(Mylabs_1))은 5주차로 이월
+    id:"2026-09-w4", label:"2026년 9월 4주차",
+    orders:[
+      {label:"Phytosome 3개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"약사피셜", qty:99, settlement:9427662, sales:9868150, cost_usd:55.27, ship_usd:7.3},
+      {label:"Phytosome 6개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"약사피셜", qty:74, settlement:12663708, sales:13293500, cost_usd:104.24, ship_usd:8.3},
+      {label:"Magduo K2 3개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"몸짱약사", qty:19, settlement:1132777, sales:1197000, cost_usd:37.27, ship_usd:7.3},
+      {label:"Magduo K2 6개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"몸짱약사", qty:20, settlement:1935360, sales:2040000, cost_usd:68.24, ship_usd:8.3},
+      {label:"Magduo K2 3개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"약사피셜", qty:6, settlement:359244, sales:373000, cost_usd:37.27, ship_usd:7.3},
+      {label:"Magduo K2 6개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"약사피셜", qty:4, settlement:387072, sales:408000, cost_usd:68.24, ship_usd:8.3},
+      {label:"Liver-DEX 3개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"몸짱제니약사", qty:7, settlement:778742, sales:819000, cost_usd:82.27, ship_usd:7.3},
+      {label:"Liver-DEX 6개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"몸짱제니약사", qty:4, settlement:759148, sales:791000, cost_usd:158.24, ship_usd:8.3},
+      {label:"BQ10 CoQ10 1pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", pharmacist:null, qty:8, settlement:358545, sales:384000, cost_usd:21.29, ship_usd:4.8},
+      {label:"BQ10 CoQ10 2pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", pharmacist:null, qty:11, settlement:936694, sales:1003200, cost_usd:37.78, ship_usd:4.8},
+      {label:"BQ10 CoQ10 3pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", pharmacist:null, qty:6, settlement:726051, sales:767600, cost_usd:54.27, ship_usd:4.8},
+      {label:"Magduo K2 2pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", pharmacist:null, qty:2, settlement:102895, sales:110200, cost_usd:24.78, ship_usd:4.8},
+      {label:"Magduo K2 3pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", pharmacist:null, qty:1, settlement:73110, sales:78300, cost_usd:34.77, ship_usd:4.8},
+      {label:"Circu Pycnogenol 2pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", pharmacist:null, qty:1, settlement:133053, sales:142500, cost_usd:50.78, ship_usd:4.8},
+      {label:"NAD+ 1pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", pharmacist:null, qty:1, settlement:64427, sales:64000, cost_usd:22.79, ship_usd:4.8},
+      {label:"VS Formula Prime 1pk", channel:"스마트스토어", brand:"Mylabs", type:"상시", comm_basis:"actual", pharmacist:null, qty:1, settlement:42951, sales:46000, cost_usd:9.99, ship_usd:4.8},
+      {label:"VS Formula Prime 3pk", channel:"스마트스토어", brand:"Mylabs", type:"상시", comm_basis:"actual", pharmacist:null, qty:2, settlement:231932, sales:248400, cost_usd:20.37, ship_usd:4.8},
+      {label:"VS Formula Prime 3pk", channel:"11번가", brand:"Mylabs", type:"상시", comm_basis:"actual", pharmacist:null, qty:1, settlement:103500, sales:138000, cost_usd:20.37, ship_usd:4.8},
+      {label:"VS Formula Prime 2pk", channel:"쿠팡", brand:"Mylabs", type:"상시", comm_basis:"est", pharmacist:null, qty:2, settlement:160264, sales:184000, cost_usd:15.18, ship_usd:4.8}
+    ]
+  },
+  {
     // 2026-09-19 정정: 8월3·4주차, 9월1주차 BQ10 공구를 스마트스토어 구매확정내역 기준으로 교체
     //   (발송대기 스냅샷에 8/26–8/28 릴리약사 공구 주문이 대량 누락돼 있었음)
     // 주문파일 Smart(Mylabs_YDY) 091426/091526/091626/091726/091826 (발송대기 스냅샷 5개)
@@ -693,7 +722,7 @@ const COST_TABLE = [
 ];
 
 // ── State ─────────────────────────────────────────────────────────────────────
-let RATE=1386.97, rateSrc="캐시(2026-09-18)", selPeriod="all";
+let RATE=1357.41, rateSrc="캐시(2026-09-26)", selPeriod="all";
 const LS="sb_v5";
 function loadExtra(){try{return JSON.parse(localStorage.getItem(LS))||[];}catch{return[];}}
 function allOrders(){return[...PERIODS_DATA.flatMap(p=>p.orders.map(o=>({...o,period:p.id}))),...loadExtra().flatMap(p=>p.orders.map(o=>({...o,period:p.id})))];}
