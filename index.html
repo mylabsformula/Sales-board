@@ -253,11 +253,47 @@ tr:hover td{background:#fafafa;}
 // 11번가: 건강기능식품 약 11% (Lavita는 판매자할인+서비스료 실제값)
 const PERIODS_DATA = [
   {
+    // 주문파일 Smart(Mylabs_YDY) 101226/101326/101426/101526/101626 공구 + 100926 이월분, 쿠팡 101426/101626
+    // 상품주문번호 기준 중복 제거 후 주문일시 10/10–10/16 건만 집계 (스냅샷 간 중복 4건 제거)
+    // 포함: 10/10 00:13–01:26 리버덱스 공구 이월 4건(3개묶음 2·6개묶음 2), 10/7 김미성약사 파이토좀 3개묶음 1건(무통장, 10/10 입금 후 101226에 처음 등장)
+    // 10/17 01:40 파이토좀 2pk 1건은 4주차로 이월
+    // 공구: 몸짱제니약사 파이토좀(상품번호 12731612798), 김미성약사 파이토좀 잔여 8건, 릴리 리버덱스, 형제약사 BQ10
+    // 쿠팡 10/13 VS 2pk·10/16 VS 1pk(실질 수수료 12.9% 추정), 11번가: 해당 기간 주문파일 없음
+    // iHerb: 신규 인보이스 없음
+    id:"2026-10-w3", label:"2026년 10월 3주차",
+    orders:[
+      {label:"Phytosome 3개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"몸짱제니약사", qty:68, settlement:6471183, sales:6791000, cost_usd:55.27, ship_usd:7.3},
+      {label:"Phytosome 6개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"몸짱제니약사", qty:60, settlement:10263981, sales:10763400, cost_usd:104.24, ship_usd:8.3},
+      {label:"Phytosome 3개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"김미성약사", qty:5, settlement:470852, sales:500000, cost_usd:55.27, ship_usd:7.3},
+      {label:"Phytosome 6개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"김미성약사", qty:3, settlement:511398, sales:540000, cost_usd:104.24, ship_usd:8.3},
+      {label:"Liver-DEX 3개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"릴리약사", qty:74, settlement:8250142, sales:8640300, cost_usd:64.27, ship_usd:7.3},
+      {label:"Liver-DEX 6개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"릴리약사", qty:37, settlement:7006201, sales:7340100, cost_usd:122.24, ship_usd:8.3},
+      {label:"BQ10 CoQ10 3개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"형제약사", qty:87, settlement:8945890, sales:9372750, cost_usd:56.77, ship_usd:7.3},
+      {label:"BQ10 CoQ10 6개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"형제약사", qty:76, settlement:14311725, sales:15028180, cost_usd:107.24, ship_usd:8.3},
+      {label:"BQ10 CoQ10 1pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", pharmacist:null, qty:1, settlement:44818, sales:48000, cost_usd:21.29, ship_usd:4.8},
+      {label:"BQ10 CoQ10 3pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", pharmacist:null, qty:2, settlement:242017, sales:259200, cost_usd:54.27, ship_usd:4.8},
+      {label:"Liver-DEX 1pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", pharmacist:null, qty:1, settlement:64426, sales:69000, cost_usd:23.79, ship_usd:4.8},
+      {label:"Liver-DEX 3pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", pharmacist:null, qty:1, settlement:173949, sales:186300, cost_usd:61.77, ship_usd:4.8},
+      {label:"Magduo K2 1pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", pharmacist:null, qty:1, settlement:27658, sales:29000, cost_usd:14.79, ship_usd:4.8},
+      {label:"Magduo K2 2pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", pharmacist:null, qty:3, settlement:154341, sales:165300, cost_usd:24.78, ship_usd:4.8},
+      {label:"Magduo K2 3pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", pharmacist:null, qty:3, settlement:219327, sales:234900, cost_usd:34.77, ship_usd:4.8},
+      {label:"NAD+ 2pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", pharmacist:null, qty:3, settlement:367227, sales:393300, cost_usd:40.78, ship_usd:4.8},
+      {label:"NAD+ 3pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", pharmacist:null, qty:2, settlement:347898, sales:372600, cost_usd:58.77, ship_usd:4.8},
+      {label:"Phytosome 1pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", pharmacist:null, qty:1, settlement:41010, sales:43000, cost_usd:20.79, ship_usd:4.8},
+      {label:"Phytosome 2pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", pharmacist:null, qty:2, settlement:152569, sales:163400, cost_usd:36.78, ship_usd:4.8},
+      {label:"Phytosome 3pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", pharmacist:null, qty:1, settlement:108403, sales:116100, cost_usd:52.77, ship_usd:4.8},
+      {label:"VS Formula Prime 1pk", channel:"스마트스토어", brand:"Mylabs", type:"상시", comm_basis:"actual", pharmacist:null, qty:11, settlement:472462, sales:506000, cost_usd:9.99, ship_usd:4.8},
+      {label:"VS Formula Prime 2pk", channel:"쿠팡", brand:"Mylabs", type:"상시", comm_basis:"est", pharmacist:null, qty:1, settlement:80132, sales:92000, cost_usd:15.18, ship_usd:4.8},
+      {label:"VS Formula Prime 1pk", channel:"쿠팡", brand:"Mylabs", type:"상시", comm_basis:"est", pharmacist:null, qty:1, settlement:40066, sales:46000, cost_usd:9.99, ship_usd:4.8}
+    ]
+  },
+  {
     // 주문파일 Smart(Mylabs_YDY) 100526/100626/100726/100826/100926 공구 (100226은 10/02 주문만 있어 해당 없음)
     // 상품주문번호 기준 중복 제거 후 주문일시 10/03–10/09 건만 집계 (337건, 스냅샷 간 중복 없음 확인)
     // 10/10 00:13–01:26 리버덱스 공구 4건(3개묶음 2·6개묶음 2)은 3주차로 이월
     // 신규 공구: 김미성약사 파이토좀(상품번호 12731615839), 릴리 리버덱스, 형제약사 BQ10 (약사수수료 별도 없음)
-    // 11번가·쿠팡·Mylabs_1: 해당 기간 주문파일 없음
+    // 11번가: 해당 기간 주문파일 없음
+    // 10/17 보정: 뒤늦게 올라온 Smart(Mylabs_1) 101226의 10/7·10/8 VS 3pk 2건, Coupang 101226의 10/9 VS 3pk 1건을 주문일 기준으로 2주차에 추가
     // iHerb: 인보이스 0111(CA, NAD+ 72·BQ10 312·Circu 24) / 0112(KY, NAD+ 24) 추가 = $7,423.68
     id:"2026-10-w2", label:"2026년 10월 2주차",
     orders:[
@@ -274,7 +310,8 @@ const PERIODS_DATA = [
       {label:"NAD+ 2pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", pharmacist:null, qty:2, settlement:244818, sales:257200, cost_usd:40.78, ship_usd:4.8},
       {label:"NAD+ 3pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", pharmacist:null, qty:1, settlement:173949, sales:186300, cost_usd:58.77, ship_usd:4.8},
       {label:"VS Formula Prime 1pk", channel:"스마트스토어", brand:"Mylabs", type:"상시", comm_basis:"actual", pharmacist:null, qty:6, settlement:257706, sales:276000, cost_usd:9.99, ship_usd:4.8},
-      {label:"VS Formula Prime 3pk", channel:"스마트스토어", brand:"Mylabs", type:"상시", comm_basis:"actual", pharmacist:null, qty:1, settlement:115966, sales:124200, cost_usd:20.37, ship_usd:4.8}
+      {label:"VS Formula Prime 3pk", channel:"스마트스토어", brand:"Mylabs", type:"상시", comm_basis:"actual", pharmacist:null, qty:3, settlement:349456, sales:372600, cost_usd:20.37, ship_usd:4.8},
+      {label:"VS Formula Prime 3pk", channel:"쿠팡", brand:"Mylabs", type:"상시", comm_basis:"est", pharmacist:null, qty:1, settlement:108178, sales:124200, cost_usd:20.37, ship_usd:4.8}
     ]
   },
   {
@@ -774,7 +811,7 @@ const COST_TABLE = [
 ];
 
 // ── State ─────────────────────────────────────────────────────────────────────
-let RATE=1342.34, rateSrc="캐시(2026-10-09)", selPeriod="all";
+let RATE=1334.65, rateSrc="캐시(2026-10-16)", selPeriod="all";
 const LS="sb_v5";
 function loadExtra(){try{return JSON.parse(localStorage.getItem(LS))||[];}catch{return[];}}
 function allOrders(){return[...PERIODS_DATA.flatMap(p=>p.orders.map(o=>({...o,period:p.id}))),...loadExtra().flatMap(p=>p.orders.map(o=>({...o,period:p.id})))];}
