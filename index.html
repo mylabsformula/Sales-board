@@ -301,10 +301,11 @@ const PERIODS_DATA = [
     // 형제약사 마그네슘 K2 공구(상품번호 13810402535, 약사수수료 없음), 하유약사 베르베린 MS 6개묶음 1건(약사수수료 28%)
     // 쿠팡 10/25 VS 2pk(실질 수수료 12.9% 추정), 11번가: 해당 기간 주문파일 없음, iHerb: 신규 인보이스 없음
     // 11/08 보정: 110226에 처음 등장한 10/30 23:10 이후 주문(고약사 3개묶음 6·6개묶음 1, 형제약사 K2 3개묶음 1, 파이토좀 1pk 1) + 10/29 무통장 고약사 3개묶음 1건(11/01 입금)을 주문일 기준으로 추가
+    // 11/08 재정산: 102626 공구 파일이 정산(11/1) 이후 11/3에 갱신되며 고약사 6개묶음 791건(주로 10/25 주문) 추가 → 6개묶음 838→1,629(+누락분 1 = 1,630), 매출 +142,283,400·정산 +135,611,610. 10월 배송리스트 4,215건과 대조해 확인
     id:"2026-10-w5", label:"2026년 10월 5주차",
     orders:[
       {label:"Phytosome 3개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"고약사", qty:1308, settlement:124518351, sales:130440430, cost_usd:55.27, ship_usd:7.3},
-      {label:"Phytosome 6개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"고약사", qty:839, settlement:143736447, sales:150689130, cost_usd:104.24, ship_usd:8.3},
+      {label:"Phytosome 6개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"고약사", qty:1630, settlement:279348057, sales:292972530, cost_usd:104.24, ship_usd:8.3},
       {label:"Berberine MS 6개묶음", channel:"스마트스토어", brand:"Mylabs", type:"공구", comm_basis:"actual", pharmacist:"하유약사", qty:1, settlement:176470, sales:189000, cost_usd:78.2, ship_usd:8.3, ph_krw:52920},
       {label:"Magduo K2 3개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"형제약사", qty:6, settlement:354204, sales:373000, cost_usd:37.27, ship_usd:7.3},
       {label:"Magduo K2 6개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"형제약사", qty:6, settlement:577548, sales:612000, cost_usd:68.24, ship_usd:8.3},
