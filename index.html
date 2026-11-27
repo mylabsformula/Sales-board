@@ -253,6 +253,64 @@ tr:hover td{background:#fafafa;}
 // 11번가: 건강기능식품 약 11% (Lavita는 판매자할인+서비스료 실제값)
 const PERIODS_DATA = [
   {
+    // 주문파일 Smart(Mylabs_YDY) 112326/112426/112526/112626/112726 공구, Mylabs_1 112626
+    // 상품주문번호 기준 중복 제거 후 주문일시 11/21–11/27 건만 집계 (1794행, 3주차에서 이월된 11/21 주문 포함). 11/28 00:07 이후 11건은 11월 5주차로 이월
+    // 신규 공구: 김미성약사 × YDY 베르베린 파이토좀(12731615839), 약들약 × YDY NAD+ 6박스(13883838517 — 옵션에 리버덱스 6개묶음 포함, 리버덱스분은 약들약 리버덱스 6개묶음에 합산), 약사피셜 × YDY 리버덱스(13884160017), 형제약사 × YDY 비큐텐 재개
+    // 봄약사 × 베르베린 MS 공구 약사수수료 35%(기존 봄약사 기준 — 확인 필요). YDY 공구 약사수수료 미반영(기존 기준)
+    // Mag Up 1pk 4개: 원가 $5.90 (재고보드 기준), 정산보드 첫 등장
+    // 상시 배송비: 배송비 묶음번호(1배송) 기준 3병 이하 $4.8·4병 이상 $5.8을 라인별 병수 비율로 배분 (공구는 외주 패킹 3개묶음 $7.3·6개묶음 $8.3)
+    // 늦게 올라온 주문 보정: 11/19 약들약 리버덱스 3개묶음 1건(112326) → 3주차, 11/11 VS 3pk 1건(Mylabs_1 112626) → 2주차
+    // 쿠팡·11번가: 해당 기간 주문파일 없음
+    // iHerb: 인보이스 0124(KY, 11/24 $1,097.28)·0125(CA, 11/24 $15,236.64) 추가 = $16,333.92
+    id:"2026-11-w4", label:"2026년 11월 4주차",
+    orders:[
+      {label:"Phytosome 6개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"고약사", qty:45, settlement:7562984, sales:8086000, cost_usd:104.24, ship_usd:8.3},
+      {label:"Phytosome 3개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"김미성약사", qty:56, settlement:5246733, sales:5598000, cost_usd:55.27, ship_usd:7.3},
+      {label:"Phytosome 6개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"김미성약사", qty:61, settlement:10280840, sales:10967000, cost_usd:104.24, ship_usd:8.3},
+      {label:"BQ10 CoQ10 3개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"릴리약사", qty:22, settlement:2255201, sales:2373000, cost_usd:56.77, ship_usd:7.3},
+      {label:"BQ10 CoQ10 6개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"릴리약사", qty:9, settlement:1695538, sales:1782000, cost_usd:107.24, ship_usd:8.3},
+      {label:"Phytosome 3개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"릴리약사", qty:5, settlement:472854, sales:497000, cost_usd:55.27, ship_usd:7.3},
+      {label:"Phytosome 6개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"릴리약사", qty:5, settlement:851131, sales:900000, cost_usd:104.24, ship_usd:8.3},
+      {label:"VS Formula Prime 3개묶음", channel:"스마트스토어", brand:"Mylabs", type:"공구", comm_basis:"actual", pharmacist:"마이약사", qty:1, settlement:94417, sales:99000, cost_usd:22.87, ship_usd:7.3, ph_krw:34650},
+      {label:"BQ10 CoQ10 3개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"몸짱약사", qty:5, settlement:510682, sales:537000, cost_usd:56.77, ship_usd:7.3},
+      {label:"BQ10 CoQ10 6개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"몸짱약사", qty:2, settlement:377666, sales:396000, cost_usd:107.24, ship_usd:8.3},
+      {label:"Berberine MS 3개묶음", channel:"스마트스토어", brand:"Mylabs", type:"공구", comm_basis:"actual", pharmacist:"봄약사", qty:8, settlement:778225, sales:813000, cost_usd:42.25, ship_usd:7.3, ph_krw:284550},
+      {label:"Berberine MS 6개묶음", channel:"스마트스토어", brand:"Mylabs", type:"공구", comm_basis:"actual", pharmacist:"봄약사", qty:8, settlement:1438220, sales:1512000, cost_usd:78.2, ship_usd:8.3, ph_krw:529200},
+      {label:"Phytosome 3개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"쀼약사", qty:63, settlement:5996330, sales:6289000, cost_usd:55.27, ship_usd:7.3},
+      {label:"Phytosome 6개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"쀼약사", qty:42, settlement:7170382, sales:7557000, cost_usd:104.24, ship_usd:8.3},
+      {label:"Liver-DEX 3개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"약들약", qty:394, settlement:43874882, sales:46039100, cost_usd:64.27, ship_usd:7.3},
+      {label:"Liver-DEX 6개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"약들약", qty:430, settlement:83360525, sales:87415220, cost_usd:122.24, ship_usd:8.3},
+      {label:"NAD+ 6개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"약들약", qty:383, settlement:76257516, sales:79937100, cost_usd:116.24, ship_usd:8.3},
+      {label:"Liver-DEX 3개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"약사임당", qty:1, settlement:109243, sales:117000, cost_usd:64.27, ship_usd:7.3},
+      {label:"Liver-DEX 6개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"약사임당", qty:1, settlement:189787, sales:199000, cost_usd:122.24, ship_usd:8.3},
+      {label:"Circu Pycnogenol 6개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"약사피셜", qty:4, settlement:906960, sales:956000, cost_usd:146.24, ship_usd:8.3},
+      {label:"Liver-DEX 3개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"약사피셜", qty:1, settlement:111583, sales:117000, cost_usd:64.27, ship_usd:7.3},
+      {label:"Liver-DEX 6개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"약사피셜", qty:2, settlement:379574, sales:398000, cost_usd:122.24, ship_usd:8.3},
+      {label:"BQ10 CoQ10 3개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"형제약사", qty:4, settlement:409840, sales:432000, cost_usd:56.77, ship_usd:7.3},
+      {label:"BQ10 CoQ10 6개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"형제약사", qty:2, settlement:377667, sales:396000, cost_usd:107.24, ship_usd:8.3},
+      {label:"BQ10 CoQ10 1pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", pharmacist:null, qty:8, settlement:358546, sales:384000, cost_usd:21.29, ship_usd:4.8},
+      {label:"BQ10 CoQ10 2pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", pharmacist:null, qty:5, settlement:425772, sales:453000, cost_usd:37.4, ship_usd:4.42},
+      {label:"BQ10 CoQ10 3pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", pharmacist:null, qty:6, settlement:726049, sales:777600, cost_usd:53.39, ship_usd:3.92},
+      {label:"Berberine MS 3pk", channel:"스마트스토어", brand:"Mylabs", type:"상시", comm_basis:"actual", pharmacist:null, qty:2, settlement:219128, sales:232200, cost_usd:38.07, ship_usd:3.12},
+      {label:"Circu Pycnogenol 1pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", pharmacist:null, qty:1, settlement:56022, sales:60000, cost_usd:27.79, ship_usd:4.8},
+      {label:"Circu Pycnogenol 2pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", pharmacist:null, qty:1, settlement:106442, sales:114000, cost_usd:50.78, ship_usd:4.8},
+      {label:"Liver-DEX 1pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", pharmacist:null, qty:31, settlement:1739094, sales:1842000, cost_usd:23.42, ship_usd:4.43},
+      {label:"Liver-DEX 2pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", pharmacist:null, qty:14, settlement:1490191, sales:1596000, cost_usd:42.67, ship_usd:4.69},
+      {label:"Liver-DEX 3pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", pharmacist:null, qty:12, settlement:1818362, sales:1944000, cost_usd:61.33, ship_usd:4.36},
+      {label:"Mag up 1pk", channel:"스마트스토어", brand:"Mylabs", type:"상시", comm_basis:"actual", pharmacist:null, qty:4, settlement:108310, sales:116000, cost_usd:7.35, ship_usd:1.45},
+      {label:"Magduo K2 1pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", pharmacist:null, qty:5, settlement:121905, sales:130000, cost_usd:14.15, ship_usd:4.16},
+      {label:"Magduo K2 2pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", pharmacist:null, qty:3, settlement:138377, sales:148200, cost_usd:24.78, ship_usd:4.8},
+      {label:"Magduo K2 3pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", pharmacist:null, qty:2, settlement:132497, sales:139400, cost_usd:32.14, ship_usd:2.17},
+      {label:"NAD+ 1pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", pharmacist:null, qty:10, settlement:492811, sales:517000, cost_usd:22.31, ship_usd:4.32},
+      {label:"NAD+ 2pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", pharmacist:null, qty:7, settlement:649702, sales:691600, cost_usd:40.78, ship_usd:4.8},
+      {label:"NAD+ 3pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", pharmacist:null, qty:3, settlement:398892, sales:421200, cost_usd:58.77, ship_usd:4.8},
+      {label:"Phytosome 1pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", pharmacist:null, qty:45, settlement:1730078, sales:1836000, cost_usd:19.74, ship_usd:3.75},
+      {label:"Phytosome 2pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", pharmacist:null, qty:20, settlement:1456280, sales:1545000, cost_usd:36.78, ship_usd:4.8},
+      {label:"Phytosome 3pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", pharmacist:null, qty:86, settlement:8915628, sales:9511200, cost_usd:52.57, ship_usd:4.6},
+      {label:"VS Formula Prime 3pk", channel:"스마트스토어", brand:"Mylabs", type:"상시", comm_basis:"actual", pharmacist:null, qty:3, settlement:348677, sales:372600, cost_usd:20.37, ship_usd:4.8}
+    ]
+  },
+  {
     // 주문파일 Smart(Mylabs_YDY) 111626 공구·상시/111726/111826/111926/112026 공구, 쿠팡 111626·111726
     // 상품주문번호 기준 중복 제거 후 주문일시 11/14–11/20 건만 집계 (1507행). 11/21 00:03 이후 22건은 11월 4주차로 이월
     // 신규 공구: 릴리약사 × YDY 올액티브비큐텐(상품번호 13641024240), 약들약 × YDY 리버덱스(13685613918), 마이약사 × 마이랩스 VS Formula Prime(13853337587, 약사수수료 35% 가정 — 확인 필요), 약사피셜 × 써큐 피크노제놀
@@ -260,6 +318,7 @@ const PERIODS_DATA = [
     // 상시 배송비: 배송비 묶음번호(1배송) 기준 3병 이하 $4.8·4병 이상 $5.8을 라인별 병수 비율로 배분 (공구는 외주 패킹 3개묶음 $7.3·6개묶음 $8.3)
     // 쿠팡 11/14·11/17 VS 2pk 각 1건(실질 수수료 12.9% 추정), 11번가: 해당 기간 주문파일 없음
     // iHerb: 인보이스 0122(CA, 11/20 $41,026.32)·0123(KY, 11/20 $14,055.12) 추가
+    // 11/27 보정: 112326에 처음 등장한 11/19 주문 1건(약들약 리버덱스 3개묶음) 추가
     id:"2026-11-w3", label:"2026년 11월 3주차",
     orders:[
       {label:"Phytosome 6개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"고약사", qty:26, settlement:4373322, sales:4677000, cost_usd:104.24, ship_usd:8.3},
@@ -274,7 +333,7 @@ const PERIODS_DATA = [
       {label:"Phytosome 6개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"몸짱제니약사", qty:55, settlement:9398447, sales:9869430, cost_usd:104.24, ship_usd:8.3},
       {label:"Phytosome 3개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"쀼약사", qty:20, settlement:1907406, sales:1994000, cost_usd:55.27, ship_usd:7.3},
       {label:"Phytosome 6개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"쀼약사", qty:18, settlement:3082796, sales:3234000, cost_usd:104.24, ship_usd:8.3},
-      {label:"Liver-DEX 3개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"약들약", qty:320, settlement:35659871, sales:37362100, cost_usd:64.27, ship_usd:7.3},
+      {label:"Liver-DEX 3개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"약들약", qty:321, settlement:35771454, sales:37479100, cost_usd:64.27, ship_usd:7.3},
       {label:"Liver-DEX 6개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"약들약", qty:255, settlement:48332042, sales:50672150, cost_usd:122.24, ship_usd:8.3},
       {label:"Liver-DEX 3개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"약사임당", qty:52, settlement:5776593, sales:6070830, cost_usd:64.27, ship_usd:7.3},
       {label:"Liver-DEX 6개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"약사임당", qty:18, settlement:3408208, sales:3579000, cost_usd:122.24, ship_usd:8.3},
@@ -308,6 +367,7 @@ const PERIODS_DATA = [
     // 상시 배송비: 배송비 묶음번호(1배송) 기준 3병 이하 $4.8·4병 이상 $5.8을 라인별 병수 비율로 배분 (공구는 외주 패킹 3개묶음 $7.3·6개묶음 $8.3)
     // 쿠팡 11/11 VS 2pk 1건(실질 수수료 12.9% 추정), 11번가: 해당 기간 주문파일 없음
     // iHerb: 인보이스 0121(CA, 11/13) 추가 = $16,381.68
+    // 11/27 보정: Mylabs_1 112626에 처음 등장한 11/11 주문 1건(VS Formula Prime 3pk) 추가
     id:"2026-11-w2", label:"2026년 11월 2주차",
     orders:[
       {label:"Phytosome 3개묶음", channel:"스마트스토어", brand:"YDY", type:"공구", comm_basis:"actual", pharmacist:"고약사", qty:177, settlement:16852545, sales:17663000, cost_usd:55.27, ship_usd:7.3},
@@ -342,6 +402,7 @@ const PERIODS_DATA = [
       {label:"Phytosome 2pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", pharmacist:null, qty:33, settlement:2401847, sales:2561700, cost_usd:36.55, ship_usd:4.57},
       {label:"Phytosome 3pk", channel:"스마트스토어", brand:"YDY", type:"상시", comm_basis:"actual", pharmacist:null, qty:59, settlement:6102745, sales:6509220, cost_usd:52.71, ship_usd:4.74},
       {label:"VS Formula Prime 1pk", channel:"스마트스토어", brand:"Mylabs", type:"상시", comm_basis:"actual", pharmacist:null, qty:4, settlement:171804, sales:184000, cost_usd:9.99, ship_usd:4.8},
+      {label:"VS Formula Prime 3pk", channel:"스마트스토어", brand:"Mylabs", type:"상시", comm_basis:"actual", pharmacist:null, qty:1, settlement:116745, sales:124200, cost_usd:20.37, ship_usd:4.8},
       {label:"VS Formula Prime 2pk", channel:"쿠팡", brand:"Mylabs", type:"상시", comm_basis:"est", pharmacist:null, qty:1, settlement:80132, sales:92000, cost_usd:15.18, ship_usd:4.8}
     ]
   },
@@ -1019,7 +1080,7 @@ const COST_TABLE = [
 ];
 
 // ── State ─────────────────────────────────────────────────────────────────────
-let RATE=1363.79, rateSrc="캐시(2026-11-06)", selPeriod="all";
+let RATE=1343.84, rateSrc="캐시(2026-11-27)", selPeriod="all";
 const LS="sb_v5";
 function loadExtra(){try{return JSON.parse(localStorage.getItem(LS))||[];}catch{return[];}}
 function allOrders(){return[...PERIODS_DATA.flatMap(p=>p.orders.map(o=>({...o,period:p.id}))),...loadExtra().flatMap(p=>p.orders.map(o=>({...o,period:p.id})))];}
@@ -1396,12 +1457,12 @@ function renderCosts(){
 
 
 // ── iHerb 미국 도매 (US Sales, USD 기준 · 한국 리테일과 분리) ──────────────────
-const IHERB_MON_PROD = {"products": ["BQ10 CoQ10", "Berberine Alpha", "Chelated Mag K2", "Berberine MS", "Phytosome", "VS Formula Prime", "NAD+", "Circu Pycnogenol"], "rows": [{"ym": "2026-01", "q": [360, 480, 192, -84, 0, 0, 0, 0], "total": 948}, {"ym": "2026-02", "q": [48, 96, 0, 0, 0, 144, 0, 0], "total": 288}, {"ym": "2026-03", "q": [1272, 1584, 720, 360, 240, 72, 0, 0], "total": 4248}, {"ym": "2026-04", "q": [336, 0, 24, 0, 0, 0, 0, 0], "total": 360}, {"ym": "2026-05", "q": [1248, 72, 408, 0, 168, 0, 0, 0], "total": 1896}, {"ym": "2026-06", "q": [144, 672, 264, 0, 432, 0, 0, 0], "total": 1512}, {"ym": "2026-07", "q": [1272, 384, 576, 0, 1944, 0, 0, 0], "total": 4176}, {"ym": "2026-08", "q": [840, 0, 648, 0, 1056, 24, 240, 240], "total": 3048}, {"ym": "2026-09", "q": [1152, 0, 744, 864, 1104, 0, 0, 0], "total": 3864}, {"ym": "2026-10", "q": [1368, 0, 72, 456, 1176, 0, 192, 24], "total": 3288}, {"ym": "2026-11", "q": [1680, 0, 408, 408, 3936, 24, 432, 192], "total": 7080}]};
-const IHERB_ORDERS = 74;
-const IHERB_ORD_MONTH = {"2026-01": 4, "2026-02": 2, "2026-03": 11, "2026-04": 3, "2026-05": 9, "2026-06": 9, "2026-07": 8, "2026-08": 6, "2026-09": 5, "2026-10": 8, "2026-11": 7};
-const IHERB_SHIP = {"ca_boxes": 958, "ky_boxes": 323, "ca": 16286, "ky": 8721, "total": 25007, "by_month": {"2026-01": 828, "2026-02": 274, "2026-03": 3409, "2026-04": 325, "2026-05": 1433, "2026-06": 1251, "2026-07": 3220, "2026-08": 2399, "2026-09": 3518, "2026-10": 2809, "2026-11": 5541}};
-const IHERB_MONTHLY = [{"ym": "2026-01", "qty": 948, "gross": 15230.52, "net": 15230.52, "cost": 10936.68}, {"ym": "2026-02", "qty": 288, "gross": 4353.12, "net": 4353.12, "cost": 2351.04}, {"ym": "2026-03", "qty": 4248, "gross": 66815.52, "net": 66815.52, "cost": 49974.0}, {"ym": "2026-04", "qty": 360, "gross": 5780.4, "net": 5780.4, "cost": 5780.4}, {"ym": "2026-05", "qty": 1896, "gross": 28637.04, "net": 28637.04, "cost": 27950.88}, {"ym": "2026-06", "qty": 1512, "gross": 22617.84, "net": 22617.84, "cost": 17604.72}, {"ym": "2026-07", "qty": 4176, "gross": 64722.24, "net": 64722.24, "cost": 61062.72}, {"ym": "2026-08", "qty": 3048, "gross": 47351.52, "net": 47351.52, "cost": 47351.52}, {"ym": "2026-09", "qty": 3864, "gross": 57033.36, "net": 57033.36, "cost": 54147.6}, {"ym": "2026-10", "qty": 3288, "gross": 52923.12, "net": 52923.12, "cost": 51400.08}, {"ym": "2026-11", "qty": 7080, "gross": 113323.2, "net": 113323.2, "cost": 111779.28}];
-const IHERB_DATA = [{"label": "BQ10 CoQ10", "brand": "YDY", "qty": 9720, "gross": 160282.8, "net": 160282.8, "cost": 16.49}, {"label": "Berberine Alpha", "brand": "Mylabs", "qty": 3288, "gross": 59151.12, "net": 59151.12, "cost": 8.46}, {"label": "Chelated Mag K2", "brand": "YDY", "qty": 4104, "gross": 39607.92, "net": 39607.92, "cost": 9.99}, {"label": "Phytosome", "brand": "YDY", "qty": 10536, "gross": 168470.64, "net": 168470.64, "cost": 15.99}, {"label": "Berberine MS", "brand": "Mylabs", "qty": 2004, "gross": 30039.96, "net": 30039.96, "cost": 11.65}, {"label": "VS Formula Prime", "brand": "Mylabs", "qty": 264, "gross": 3363.36, "net": 3363.36, "cost": 5.19}, {"label": "NAD+", "brand": "YDY", "qty": 888, "gross": 15975.12, "net": 15975.12, "cost": 17.99}, {"label": "Circu Pycnogenol", "brand": "YDY", "qty": 456, "gross": 10483.44, "net": 10483.44, "cost": 22.99}];
+const IHERB_MON_PROD = {"products": ["BQ10 CoQ10", "Berberine Alpha", "Chelated Mag K2", "Berberine MS", "Phytosome", "VS Formula Prime", "NAD+", "Circu Pycnogenol"], "rows": [{"ym": "2026-01", "q": [360, 480, 192, -84, 0, 0, 0, 0], "total": 948}, {"ym": "2026-02", "q": [48, 96, 0, 0, 0, 144, 0, 0], "total": 288}, {"ym": "2026-03", "q": [1272, 1584, 720, 360, 240, 72, 0, 0], "total": 4248}, {"ym": "2026-04", "q": [336, 0, 24, 0, 0, 0, 0, 0], "total": 360}, {"ym": "2026-05", "q": [1248, 72, 408, 0, 168, 0, 0, 0], "total": 1896}, {"ym": "2026-06", "q": [144, 672, 264, 0, 432, 0, 0, 0], "total": 1512}, {"ym": "2026-07", "q": [1272, 384, 576, 0, 1944, 0, 0, 0], "total": 4176}, {"ym": "2026-08", "q": [840, 0, 648, 0, 1056, 24, 240, 240], "total": 3048}, {"ym": "2026-09", "q": [1152, 0, 744, 864, 1104, 0, 0, 0], "total": 3864}, {"ym": "2026-10", "q": [1368, 0, 72, 456, 1176, 0, 192, 24], "total": 3288}, {"ym": "2026-11", "q": [2472, 0, 408, 528, 3936, 72, 480, 192], "total": 8088}]};
+const IHERB_ORDERS = 76;
+const IHERB_ORD_MONTH = {"2026-01": 4, "2026-02": 2, "2026-03": 11, "2026-04": 3, "2026-05": 9, "2026-06": 9, "2026-07": 8, "2026-08": 6, "2026-09": 5, "2026-10": 8, "2026-11": 9};
+const IHERB_SHIP = {"ca_boxes": 997, "ky_boxes": 326, "ca": 16949, "ky": 8802, "total": 25751, "by_month": {"2026-01": 828, "2026-02": 274, "2026-03": 3409, "2026-04": 325, "2026-05": 1433, "2026-06": 1251, "2026-07": 3220, "2026-08": 2399, "2026-09": 3518, "2026-10": 2809, "2026-11": 6285}};
+const IHERB_MONTHLY = [{"ym": "2026-01", "qty": 948, "gross": 15230.52, "net": 15230.52, "cost": 10936.68}, {"ym": "2026-02", "qty": 288, "gross": 4353.12, "net": 4353.12, "cost": 2351.04}, {"ym": "2026-03", "qty": 4248, "gross": 66815.52, "net": 66815.52, "cost": 49974.0}, {"ym": "2026-04", "qty": 360, "gross": 5780.4, "net": 5780.4, "cost": 5780.4}, {"ym": "2026-05", "qty": 1896, "gross": 28637.04, "net": 28637.04, "cost": 27950.88}, {"ym": "2026-06", "qty": 1512, "gross": 22617.84, "net": 22617.84, "cost": 17604.72}, {"ym": "2026-07", "qty": 4176, "gross": 64722.24, "net": 64722.24, "cost": 61062.72}, {"ym": "2026-08", "qty": 3048, "gross": 47351.52, "net": 47351.52, "cost": 47351.52}, {"ym": "2026-09", "qty": 3864, "gross": 57033.36, "net": 57033.36, "cost": 54147.6}, {"ym": "2026-10", "qty": 3288, "gross": 52923.12, "net": 52923.12, "cost": 51400.08}, {"ym": "2026-11", "qty": 8088, "gross": 129657.12, "net": 129657.12, "cost": 127350.0}];
+const IHERB_DATA = [{"label": "BQ10 CoQ10", "brand": "YDY", "qty": 10512, "gross": 173342.88, "net": 173342.88, "cost": 16.49}, {"label": "Berberine Alpha", "brand": "Mylabs", "qty": 3288, "gross": 59151.12, "net": 59151.12, "cost": 8.46}, {"label": "Chelated Mag K2", "brand": "YDY", "qty": 4104, "gross": 39607.92, "net": 39607.92, "cost": 9.99}, {"label": "Phytosome", "brand": "YDY", "qty": 10536, "gross": 168470.64, "net": 168470.64, "cost": 15.99}, {"label": "Berberine MS", "brand": "Mylabs", "qty": 2124, "gross": 31838.76, "net": 31838.76, "cost": 11.65}, {"label": "VS Formula Prime", "brand": "Mylabs", "qty": 312, "gross": 3974.88, "net": 3974.88, "cost": 5.19}, {"label": "NAD+", "brand": "YDY", "qty": 936, "gross": 16838.64, "net": 16838.64, "cost": 17.99}, {"label": "Circu Pycnogenol", "brand": "YDY", "qty": 456, "gross": 10483.44, "net": 10483.44, "cost": 22.99}];
 function renderIherb(){
   const usd=n=>"$"+Math.round(n).toLocaleString("en-US");
   const won=n=>"₩"+Math.round(n).toLocaleString("ko-KR");
